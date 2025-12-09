@@ -1,0 +1,24 @@
+{
+  "kind": "singleType",
+  "collectionName": "oauth-global-settings",
+  "info": {
+    "singularName": "oauth-global-setting",
+    "pluralName": "oauth-global-settings",
+    "displayName": "OAuth Global Setting"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "systemAccessKey": {
+      "type": "password",
+      "required": true,
+      "private": true,
+      "searchable": false
+    },
+    "scopes": {
+      "type": "json"
+    }
+  }
+}

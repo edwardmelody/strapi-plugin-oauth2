@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "oauth-clients",
+  "info": {
+    "singularName": "oauth-client",
+    "pluralName": "oauth-clients",
+    "displayName": "OAuth Client"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "clientId": {
+      "type": "string",
+      "unique": true
+    },
+    "clientSecretHash": {
+      "type": "string",
+      "private": true
+    },
+    "jwtAlg": {
+      "type": "enumeration",
+      "required": true,
+      "enum": ["HS256", "RS256", "ES256"]
+    },
+    "publicKey": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "scopes": {
+      "type": "json"
+    },
+    "redirectUris": {
+      "type": "json"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "meta": {
+      "type": "json"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "clientType": {
+      "type": "enumeration",
+      "required": true,
+      "enum": ["CONFIDENTIAL", "PUBLIC"]
+    },
+    "createdType": {
+      "type": "enumeration",
+      "required": true,
+      "enum": ["USER", "BACK_OFFICE"]
+    }
+  }
+}

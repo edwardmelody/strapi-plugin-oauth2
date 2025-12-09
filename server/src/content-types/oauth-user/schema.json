@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "oauth-users",
+  "info": {
+    "singularName": "oauth-user",
+    "pluralName": "oauth-users",
+    "displayName": "OAuth User"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "userDocumentId": {
+      "type": "string",
+      "required": true
+    },
+    "clientId": {
+      "type": "string",
+      "required": true
+    },
+    "scopes": {
+      "type": "json"
+    },
+    "apiTokenId": {
+      "type": "integer",
+      "min": 1,
+      "required": true
+    },
+    "apiTokenAccessKey": {
+      "type": "string",
+      "required": true,
+      "private": true,
+      "searchable": false
+    },
+    "client": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::oauth2.oauth-client"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

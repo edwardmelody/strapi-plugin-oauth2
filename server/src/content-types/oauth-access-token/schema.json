@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "oauth-access-tokens",
+  "info": {
+    "singularName": "oauth-access-token",
+    "pluralName": "oauth-access-tokens",
+    "displayName": "OAuth Access Token"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "accessToken": {
+      "type": "string",
+      "required": true,
+      "private": true
+    },
+    "jti": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "client": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::oauth2.oauth-client",
+      "required": true
+    },
+    "expiresAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "scope": {
+      "type": "string"
+    },
+    "revokedAt": {
+      "type": "datetime"
+    },
+    "grantType": {
+      "type": "string",
+      "required": true,
+      "enum": ["authorization_code", "client_credentials"]
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "oauth-authorization-codes",
+  "info": {
+    "singularName": "oauth-authorization-code",
+    "pluralName": "oauth-authorization-codes",
+    "displayName": "OAuth Authorization Code"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "codeHash": {
+      "type": "string",
+      "private": true
+    },
+    "client": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::oauth2.oauth-client"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "scopes": {
+      "type": "json"
+    },
+    "redirectUri": {
+      "type": "string",
+      "required": true
+    },
+    "codeChallenge": {
+      "type": "string"
+    },
+    "codeChallengeMethod": {
+      "type": "string"
+    },
+    "expiresAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "usedAt": {
+      "type": "datetime"
+    },
+    "meta": {
+      "type": "json"
+    }
+  }
+}
