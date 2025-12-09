@@ -280,7 +280,8 @@ POST /oauth2/token
 Content-Type: application/x-www-form-urlencoded
 Authorization: Basic base64(client_id:client_secret)  // Required for Confidential
 
-grant_type=authorization_code // Supports both Confidential and Public
+// Supports both Confidential and Public
+grant_type=authorization_code
 &code=AUTHORIZATION_CODE
 &redirect_uri=REDIRECT_URI
 &code_verifier=CODE_VERIFIER  // Required for Public
@@ -293,7 +294,8 @@ POST /oauth2/token
 Content-Type: application/x-www-form-urlencoded
 Authorization: Basic base64(client_id:client_secret)  // Required for Confidential
 
-grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer  // Supports Confidential only
+// Supports Confidential only
+grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer
 &assertion=JWT_ASSERTION
 ```
 
