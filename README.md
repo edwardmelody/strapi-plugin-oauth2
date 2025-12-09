@@ -275,13 +275,12 @@ Exchange Authorization Code or JWT assertion for Access Token
 
 **Authorization Code Flow:**
 
-```http
+```
 POST /oauth2/token
 Content-Type: application/x-www-form-urlencoded
 Authorization: Basic base64(client_id:client_secret)  // Required for Confidential
 
-// Supports both Confidential and Public
-grant_type=authorization_code
+grant_type=authorization_code // Supports both Confidential and Public
 &code=AUTHORIZATION_CODE
 &redirect_uri=REDIRECT_URI
 &code_verifier=CODE_VERIFIER  // Required for Public
@@ -289,13 +288,12 @@ grant_type=authorization_code
 
 **JWT Bearer Flow:**
 
-```http
+```
 POST /oauth2/token
 Content-Type: application/x-www-form-urlencoded
 Authorization: Basic base64(client_id:client_secret)  // Required for Confidential
 
-// Supports Confidential only
-grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer
+grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer  // Supports Confidential only
 &assertion=JWT_ASSERTION
 ```
 
