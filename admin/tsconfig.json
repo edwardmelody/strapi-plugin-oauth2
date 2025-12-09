@@ -4,6 +4,6 @@
   "compilerOptions": {
     "rootDir": "../",
     "baseUrl": ".",
-    "sourceMap": true
+    "sourceMap": false
   }
 }
