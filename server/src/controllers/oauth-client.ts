@@ -113,4 +113,12 @@ export default factories.createCoreController('plugin::oauth2.oauth-client', ({ 
       handleError(ctx, err);
     }
   },
+
+  async delete(ctx) {
+    try {
+      return await super.delete(ctx);
+    } catch (err) {
+      handleError(ctx, err);
+    }
+  },
 }));
