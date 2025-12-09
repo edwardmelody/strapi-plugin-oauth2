@@ -36,6 +36,11 @@ export default factories.createCoreService(
         }
       }
 
+      // validate redirectUri matches
+      if (!oauthClient.redirectUris.includes(redirectUri)) {
+        throw new ValidationError('redirect_uri_mismatch');
+      }
+
       let availableScopes = { ...oauthClient.scopes };
       if (oauthClient.createdType === 'USER') {
         const globalSettings = await strapi

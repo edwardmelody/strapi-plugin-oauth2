@@ -301,7 +301,7 @@ const AccessTokensPage = () => {
                               label="Revoke Token"
                               onClick={() => handleRevokeToken(token.jti)}
                               variant="danger-light"
-                              permission={pluginPermissions.deleteClient}
+                              permission={pluginPermissions.revokeAccessToken}
                             >
                               <MinusCircle />
                             </IconButton>

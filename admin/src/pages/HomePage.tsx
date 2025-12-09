@@ -722,6 +722,7 @@ const HomePage = () => {
                 variant="secondary"
                 startIcon={<Key />}
                 onClick={() => navigate('access-tokens')}
+                persmission={pluginPermissions.readAccessTokens}
               >
                 View All Access Tokens
               </Button>
@@ -893,6 +894,7 @@ const HomePage = () => {
                           label="View Access Tokens"
                           onClick={() => navigate(`access-tokens/${client.documentId}`)}
                           variant="tertiary"
+                          persmission={pluginPermissions.readAccessTokens}
                           withTooltip={false}
                         >
                           <Key />
@@ -919,7 +921,7 @@ const HomePage = () => {
                           label="Regenerate RSA Keypair"
                           onClick={() => handleRotateKeypair(client.documentId)}
                           variant="secondary"
-                          permission={pluginPermissions.rotateClient}
+                          permission={pluginPermissions.generateClientKeyPair}
                           withTooltip={false}
                         >
                           <Key />

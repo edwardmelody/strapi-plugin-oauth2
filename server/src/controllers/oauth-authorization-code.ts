@@ -11,17 +11,9 @@ export default factories.createCoreController(
   'plugin::oauth2.oauth-authorization-code',
   ({ strapi }) => ({
     async authorize(ctx) {
+      const { approve, clientId, redirectUri, scopes, state, codeChallenge, codeChallengeMethod } =
+        ctx.request.body;
       try {
-        const body = ctx.request.body;
-        const {
-          approve,
-          clientId,
-          redirectUri,
-          scopes,
-          state,
-          codeChallenge,
-          codeChallengeMethod,
-        } = body;
         if (!ctx.state.user) throw new UnauthorizedError('login_required');
 
         if (!approve) {
@@ -50,7 +42,10 @@ export default factories.createCoreController(
           redirectUri: `${redirectUri}?${q}`,
         };
       } catch (err) {
-        handleError(ctx, err);
+        const q = qs.stringify({ error: err.message || 'access_denied', state });
+        return {
+          redirectUri: `${redirectUri}?${q}`,
+        };
       }
     },
     async introspect(ctx) {
