@@ -7,7 +7,7 @@ import { UnauthorizedError } from '@strapi/utils/dist/errors';
 const { ValidationError } = utils.errors;
 
 export default factories.createCoreController(
-  'plugin::oauth2.oauth-access-token',
+  'plugin::strapi-plugin-oauth2.oauth-access-token',
   ({ strapi }) => ({
     async introspect(ctx) {
       try {
@@ -15,7 +15,7 @@ export default factories.createCoreController(
         const token = ctx.request.body.token;
         if (!token) throw new ValidationError('token is required');
         const res = await strapi
-          .service('plugin::oauth2.oauth-access-token')
+          .service('plugin::strapi-plugin-oauth2.oauth-access-token')
           .introspectByToken(token);
         return res;
       } catch (err) {
@@ -29,7 +29,7 @@ export default factories.createCoreController(
         if (!jti) throw new ValidationError('jti is required');
 
         const ok = await strapi
-          .service('plugin::oauth2.oauth-access-token')
+          .service('plugin::strapi-plugin-oauth2.oauth-access-token')
           .revokeTokenByJti(jti, ctx.state.user?.documentId);
         return {
           revoked: ok,
@@ -53,7 +53,7 @@ export default factories.createCoreController(
           return await strapi.db.transaction(async () => {
             // 1) consume auth code (ตรวจ: code, redirectUri, PKCE, expiry, usedAt)
             const { client, authorizationUser, scopes } = await strapi
-              .service('plugin::oauth2.oauth-authorization-code')
+              .service('plugin::strapi-plugin-oauth2.oauth-authorization-code')
               .consumeAuthorizationCode({
                 rawCode: code,
                 redirectUri: redirect_uri,
@@ -80,7 +80,7 @@ export default factories.createCoreController(
               }
 
               const validatedClient = await strapi
-                .service('plugin::oauth2.oauth-client')
+                .service('plugin::strapi-plugin-oauth2.oauth-client')
                 .validateClientCredentials(clientId, clientSecret);
               // กันกรณี attacker เอา secret ของ client อื่นมาจับคู่ code นี้
               if (!validatedClient || validatedClient.id !== client.id) {
@@ -92,7 +92,7 @@ export default factories.createCoreController(
             }
 
             const tokenResp = await strapi
-              .service('plugin::oauth2.oauth-access-token')
+              .service('plugin::strapi-plugin-oauth2.oauth-access-token')
               .issueAccessToken({
                 grantType: grant_type,
                 client,
@@ -123,7 +123,7 @@ export default factories.createCoreController(
           //   }
 
           //   const client = await strapi
-          //     .service('plugin::oauth2.oauth-client')
+          //     .service('plugin::strapi-plugin-oauth2.oauth-client')
           //     .validateClientCredentials(clientId, clientSecret);
           //   if (!client) {
           //     throw new UnauthorizedError('invalid_client_credentials', {
@@ -133,7 +133,7 @@ export default factories.createCoreController(
 
           //   const scope = (client.scopes || []).join(' ');
           //   const tokenResp = await strapi
-          //     .service('plugin::oauth2.oauth-access-token')
+          //     .service('plugin::strapi-plugin-oauth2.oauth-access-token')
           //     .issueAccessToken({
           //       grantType: grant_type,
           //       client,
@@ -151,7 +151,7 @@ export default factories.createCoreController(
           }
 
           const { client, decoded } = await strapi
-            .service('plugin::oauth2.oauth-access-token')
+            .service('plugin::strapi-plugin-oauth2.oauth-access-token')
             .verifyJWTBearer(assertion);
 
           if (client.clientType === 'CONFIDENTIAL') {
@@ -173,7 +173,7 @@ export default factories.createCoreController(
             }
 
             const validatedClient = await strapi
-              .service('plugin::oauth2.oauth-client')
+              .service('plugin::strapi-plugin-oauth2.oauth-client')
               .validateClientCredentials(clientId, clientSecret);
             // กันกรณี attacker เอา secret ของ client อื่นมาจับคู่ assertion นี้
             if (!validatedClient || validatedClient.id !== client.id) {
@@ -198,7 +198,7 @@ export default factories.createCoreController(
           const requestedScopes = decoded.scope.split(' ');
 
           const globalSettings = await strapi
-            .documents('plugin::oauth2.oauth-global-setting')
+            .documents('plugin::strapi-plugin-oauth2.oauth-global-setting')
             .findFirst();
           const availableScopes = globalSettings?.scopes || [];
           if (!availableScopes.length) {
@@ -219,7 +219,7 @@ export default factories.createCoreController(
           }
 
           const tokenResp = await strapi
-            .service('plugin::oauth2.oauth-access-token')
+            .service('plugin::strapi-plugin-oauth2.oauth-access-token')
             .issueAccessToken({
               grantType: grant_type,
               client,

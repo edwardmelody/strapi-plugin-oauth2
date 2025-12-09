@@ -24,67 +24,67 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
       section: 'plugins',
       displayName: 'Read global settings',
       uid: 'oauth-global-setting.read',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Update global settings',
       uid: 'oauth-global-setting.update',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Read available scopes',
       uid: 'oauth.read',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Create client',
       uid: 'oauth-client.create',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Rotate client secret',
       uid: 'oauth-client.rotate',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Read clients',
       uid: 'oauth-client.read',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Update client',
       uid: 'oauth-client.update',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Delete client',
       uid: 'oauth-client.delete',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Read access tokens',
       uid: 'oauth-access-token.read',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Revoke access token',
       uid: 'oauth-access-token.revoke',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
     {
       section: 'plugins',
       displayName: 'Generate client keypair',
       uid: 'oauth-client.generate-keypair',
-      pluginName: 'oauth2',
+      pluginName: 'strapi-plugin-oauth2',
     },
   ];
 
@@ -108,16 +108,18 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
   }
 
   // initial global setting
-  const globalSettings = await strapi.documents('plugin::oauth2.oauth-global-setting').findFirst();
+  const globalSettings = await strapi
+    .documents('plugin::strapi-plugin-oauth2.oauth-global-setting')
+    .findFirst();
   if (!globalSettings) {
-    await strapi.documents('plugin::oauth2.oauth-global-setting').create({
+    await strapi.documents('plugin::strapi-plugin-oauth2.oauth-global-setting').create({
       data: {
         systemAccessKey: accessKey,
         scopes: [],
       },
     });
   } else if (accessKey && !globalSettings.systemAccessKey) {
-    await strapi.documents('plugin::oauth2.oauth-global-setting').update({
+    await strapi.documents('plugin::strapi-plugin-oauth2.oauth-global-setting').update({
       documentId: globalSettings.documentId,
       data: {
         systemAccessKey: accessKey,

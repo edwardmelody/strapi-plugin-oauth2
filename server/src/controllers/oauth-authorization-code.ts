@@ -8,7 +8,7 @@ import utils from '@strapi/utils';
 const { ValidationError, UnauthorizedError } = utils.errors;
 
 export default factories.createCoreController(
-  'plugin::oauth2.oauth-authorization-code',
+  'plugin::strapi-plugin-oauth2.oauth-authorization-code',
   ({ strapi }) => ({
     async authorize(ctx) {
       const { approve, clientId, redirectUri, scopes, state, codeChallenge, codeChallengeMethod } =
@@ -54,7 +54,7 @@ export default factories.createCoreController(
         const token = ctx.request.body.token;
         if (!token) throw new ValidationError('token is required');
         const res = await strapi
-          .service('plugin::oauth2.oauth-access-token')
+          .service('plugin::strapi-plugin-oauth2.oauth-access-token')
           .introspectByToken(token);
         return res;
       } catch (err) {
@@ -68,7 +68,7 @@ export default factories.createCoreController(
         if (!jti) throw new ValidationError('jti is required');
 
         const ok = await strapi
-          .service('plugin::oauth2.oauth-access-token')
+          .service('plugin::strapi-plugin-oauth2.oauth-access-token')
           .revokeTokenByJti(jti, ctx.state.user?.documentId);
         return {
           revoked: ok,

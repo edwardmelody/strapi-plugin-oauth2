@@ -87,7 +87,7 @@ const AccessTokensPage = () => {
         },
         { encodeValuesOnly: true }
       );
-      const response = await get(`/oauth2/access-tokens?${params}`);
+      const response = await get(`/strapi-plugin-oauth2/access-tokens?${params}`);
       const { data, meta } = response.data;
 
       setTokens(data || []);
@@ -117,7 +117,7 @@ const AccessTokensPage = () => {
     if (!confirm('Are you sure you want to revoke this access token?')) return;
 
     try {
-      await post(`/oauth2/access-tokens/revoke`, {
+      await post(`/strapi-plugin-oauth2/access-tokens/revoke`, {
         jti,
       });
       fetchTokens(pagination.page, pagination.pageSize);

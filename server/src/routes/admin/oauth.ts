@@ -8,7 +8,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-global-setting.read'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-global-setting.read'],
           },
         },
       ],
@@ -23,7 +23,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-global-setting.update'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-global-setting.update'],
           },
         },
       ],
@@ -38,7 +38,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth.read'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth.read'],
           },
         },
       ],
@@ -53,7 +53,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-client.create'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-client.create'],
           },
         },
       ],
@@ -68,7 +68,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-client.rotate'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-client.rotate'],
           },
         },
       ],
@@ -83,7 +83,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-client.read'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-client.read'],
           },
         },
       ],
@@ -98,7 +98,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-client.update'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-client.update'],
           },
         },
       ],
@@ -113,7 +113,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-client.delete'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-client.delete'],
           },
         },
       ],
@@ -128,7 +128,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-access-token.read'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-access-token.read'],
           },
         },
       ],
@@ -143,7 +143,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-access-token.revoke'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-access-token.revoke'],
           },
         },
       ],
@@ -158,7 +158,7 @@ export default [
         {
           name: 'admin::hasPermissions',
           config: {
-            actions: ['plugin::oauth2.oauth-client.generate-keypair'],
+            actions: ['plugin::strapi-plugin-oauth2.oauth-client.generate-keypair'],
           },
         },
       ],

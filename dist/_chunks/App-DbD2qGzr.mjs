@@ -8,15 +8,21 @@ import { useIntl } from "react-intl";
 import qs from "qs";
 import _ from "lodash";
 const pluginPermissions = {
-  updateGlobalSettings: [{ action: "plugin::oauth2.oauth-global-setting.update", subject: null }],
-  createClient: [{ action: "plugin::oauth2.oauth-client.create", subject: null }],
-  rotateClient: [{ action: "plugin::oauth2.oauth-client.rotate", subject: null }],
-  updateClient: [{ action: "plugin::oauth2.oauth-client.update", subject: null }],
-  deleteClient: [{ action: "plugin::oauth2.oauth-client.delete", subject: null }],
-  readAccessTokens: [{ action: "plugin::oauth2.oauth-access-token.read", subject: null }],
-  revokeAccessToken: [{ action: "plugin::oauth2.oauth-access-token.revoke", subject: null }],
+  updateGlobalSettings: [
+    { action: "plugin::strapi-plugin-oauth2.oauth-global-setting.update", subject: null }
+  ],
+  createClient: [{ action: "plugin::strapi-plugin-oauth2.oauth-client.create", subject: null }],
+  rotateClient: [{ action: "plugin::strapi-plugin-oauth2.oauth-client.rotate", subject: null }],
+  updateClient: [{ action: "plugin::strapi-plugin-oauth2.oauth-client.update", subject: null }],
+  deleteClient: [{ action: "plugin::strapi-plugin-oauth2.oauth-client.delete", subject: null }],
+  readAccessTokens: [
+    { action: "plugin::strapi-plugin-oauth2.oauth-access-token.read", subject: null }
+  ],
+  revokeAccessToken: [
+    { action: "plugin::strapi-plugin-oauth2.oauth-access-token.revoke", subject: null }
+  ],
   generateClientKeyPair: [
-    { action: "plugin::oauth2.oauth-client.generate-keypair", subject: null }
+    { action: "plugin::strapi-plugin-oauth2.oauth-client.generate-keypair", subject: null }
   ]
 };
 const HomePage = () => {
@@ -60,7 +66,7 @@ const HomePage = () => {
   const fetchGlobalSettings = async () => {
     try {
       setGlobalLoading(true);
-      const response = await get("/oauth2/global-settings");
+      const response = await get("/strapi-plugin-oauth2/global-settings");
       const { data } = response.data;
       setGlobalSettings(data);
     } catch (error) {
@@ -86,7 +92,7 @@ const HomePage = () => {
         },
         { encodeValuesOnly: true }
       );
-      const response = await get(`/oauth2/clients?${params}`);
+      const response = await get(`/strapi-plugin-oauth2/clients?${params}`);
       const { data, meta } = response.data;
       setClients(data || []);
       if (meta?.pagination) {
@@ -103,7 +109,7 @@ const HomePage = () => {
   };
   const fetchAvailableScopes = async () => {
     try {
-      const { data } = await get("/oauth2/scopes");
+      const { data } = await get("/strapi-plugin-oauth2/scopes");
       setAvailableScopes(data || {});
     } catch (error) {
       toggleNotification({
@@ -166,7 +172,7 @@ const HomePage = () => {
   const handleUpdateGlobalSettings = async () => {
     if (!editGlobalSettings) return;
     try {
-      await put(`/oauth2/global-settings/${editGlobalSettings.documentId}`, {
+      await put(`/strapi-plugin-oauth2/global-settings/${editGlobalSettings.documentId}`, {
         data: {
           scopes: editGlobalSettings.scopes
         }
@@ -189,7 +195,7 @@ const HomePage = () => {
     try {
       const meta = newClient.meta ? JSON.parse(newClient.meta) : {};
       const redirectUris = newClient.redirectUris.filter((uri) => uri.trim() !== "");
-      const response = await post("/oauth2/clients", {
+      const response = await post("/strapi-plugin-oauth2/clients", {
         data: {
           name: newClient.name,
           scopes: newClient.scopes,
@@ -226,7 +232,7 @@ const HomePage = () => {
   const handleDeleteClient = async (documentId) => {
     if (!confirm("Are you sure you want to delete this client?")) return;
     try {
-      await del(`/oauth2/clients/${documentId}`);
+      await del(`/strapi-plugin-oauth2/clients/${documentId}`);
       fetchClients(pagination.page, pagination.pageSize);
       toggleNotification({
         type: "success",
@@ -248,7 +254,7 @@ const HomePage = () => {
     if (!editingClient) return;
     try {
       const redirectUris = (editingClient.redirectUris || []).filter((uri) => uri.trim() !== "");
-      await put(`/oauth2/clients/${editingClient.documentId}`, {
+      await put(`/strapi-plugin-oauth2/clients/${editingClient.documentId}`, {
         data: {
           name: editingClient.name,
           scopes: editingClient.scopes,
@@ -273,7 +279,7 @@ const HomePage = () => {
     if (!confirm("Are you sure you want to rotate the secret? The old secret will be invalidated."))
       return;
     try {
-      const response = await put(`/oauth2/clients-rotate/${documentId}`);
+      const response = await put(`/strapi-plugin-oauth2/clients-rotate/${documentId}`);
       const { data } = response.data;
       setCreatedSecret(data);
       setIsSecretModalOpen(true);
@@ -294,7 +300,7 @@ const HomePage = () => {
     ))
       return;
     try {
-      const response = await put(`/oauth2/clients-keypair/${documentId}`);
+      const response = await put(`/strapi-plugin-oauth2/clients-keypair/${documentId}`);
       const { data } = response.data;
       setCreatedSecret(data);
       setIsSecretModalOpen(true);
@@ -1466,7 +1472,7 @@ const AccessTokensPage = () => {
         },
         { encodeValuesOnly: true }
       );
-      const response = await get(`/oauth2/access-tokens?${params}`);
+      const response = await get(`/strapi-plugin-oauth2/access-tokens?${params}`);
       const { data, meta } = response.data;
       setTokens(data || []);
       if (meta?.pagination) {
@@ -1490,7 +1496,7 @@ const AccessTokensPage = () => {
   const handleRevokeToken = async (jti) => {
     if (!confirm("Are you sure you want to revoke this access token?")) return;
     try {
-      await post(`/oauth2/access-tokens/revoke`, {
+      await post(`/strapi-plugin-oauth2/access-tokens/revoke`, {
         jti
       });
       fetchTokens(pagination.page, pagination.pageSize);

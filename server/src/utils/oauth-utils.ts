@@ -6,18 +6,18 @@ import path from 'path';
 import fs from 'fs';
 
 function getOAuthConfig() {
-  const jwtAlg = strapi.plugin('oauth2').config('jwtAlg') || 'HS256';
-  const jwtSignKey = strapi.plugin('oauth2').config('jwtSignKey');
-  const accessTokenTTL = strapi.plugin('oauth2').config('accessTokenTTL') || 3600;
-  const audience = strapi.plugin('oauth2').config('audience');
-  const authCodeTtlSeconds = strapi.plugin('oauth2').config('authCodeTtlSeconds') || 300;
-  const loginUrl = strapi.plugin('oauth2').config('loginUrl');
-  const maxAssertionTtl = strapi.plugin('oauth2').config('maxAssertionTtl') || 300;
+  const jwtAlg = strapi.plugin("strapi-plugin-oauth2").config('jwtAlg') || 'HS256';
+  const jwtSignKey = strapi.plugin("strapi-plugin-oauth2").config('jwtSignKey');
+  const accessTokenTTL = strapi.plugin("strapi-plugin-oauth2").config('accessTokenTTL') || 3600;
+  const audience = strapi.plugin("strapi-plugin-oauth2").config('audience');
+  const authCodeTtlSeconds = strapi.plugin("strapi-plugin-oauth2").config('authCodeTtlSeconds') || 300;
+  const loginUrl = strapi.plugin("strapi-plugin-oauth2").config('loginUrl');
+  const maxAssertionTtl = strapi.plugin("strapi-plugin-oauth2").config('maxAssertionTtl') || 300;
   let jwtPublicKeyPath: string =
-    strapi.plugin('oauth2').config('jwtPublicKey') || './assets/oauth2/public.key';
+    strapi.plugin("strapi-plugin-oauth2").config('jwtPublicKey') || './assets/oauth2/public.key';
   let jwtPrivateKeyPath: string =
-    strapi.plugin('oauth2').config('jwtPrivateKey') || './assets/oauth2/private.key';
-  const jwtRS256Bits = strapi.plugin('oauth2').config('jwtRS256Bits') || 2048;
+    strapi.plugin("strapi-plugin-oauth2").config('jwtPrivateKey') || './assets/oauth2/private.key';
+  const jwtRS256Bits = strapi.plugin("strapi-plugin-oauth2").config('jwtRS256Bits') || 2048;
 
   jwtPublicKeyPath = path.join(process.cwd(), jwtPublicKeyPath);
   jwtPrivateKeyPath = path.join(process.cwd(), jwtPrivateKeyPath);

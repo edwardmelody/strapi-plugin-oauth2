@@ -3056,16 +3056,16 @@ function v4(options2, buf, offset) {
   return stringify(rnds);
 }
 function getOAuthConfig() {
-  const jwtAlg = strapi.plugin("oauth2").config("jwtAlg") || "HS256";
-  const jwtSignKey = strapi.plugin("oauth2").config("jwtSignKey");
-  const accessTokenTTL = strapi.plugin("oauth2").config("accessTokenTTL") || 3600;
-  const audience = strapi.plugin("oauth2").config("audience");
-  const authCodeTtlSeconds = strapi.plugin("oauth2").config("authCodeTtlSeconds") || 300;
-  const loginUrl = strapi.plugin("oauth2").config("loginUrl");
-  const maxAssertionTtl = strapi.plugin("oauth2").config("maxAssertionTtl") || 300;
-  let jwtPublicKeyPath = strapi.plugin("oauth2").config("jwtPublicKey") || "./assets/oauth2/public.key";
-  let jwtPrivateKeyPath = strapi.plugin("oauth2").config("jwtPrivateKey") || "./assets/oauth2/private.key";
-  const jwtRS256Bits = strapi.plugin("oauth2").config("jwtRS256Bits") || 2048;
+  const jwtAlg = strapi.plugin("strapi-plugin-oauth2").config("jwtAlg") || "HS256";
+  const jwtSignKey = strapi.plugin("strapi-plugin-oauth2").config("jwtSignKey");
+  const accessTokenTTL = strapi.plugin("strapi-plugin-oauth2").config("accessTokenTTL") || 3600;
+  const audience = strapi.plugin("strapi-plugin-oauth2").config("audience");
+  const authCodeTtlSeconds = strapi.plugin("strapi-plugin-oauth2").config("authCodeTtlSeconds") || 300;
+  const loginUrl = strapi.plugin("strapi-plugin-oauth2").config("loginUrl");
+  const maxAssertionTtl = strapi.plugin("strapi-plugin-oauth2").config("maxAssertionTtl") || 300;
+  let jwtPublicKeyPath = strapi.plugin("strapi-plugin-oauth2").config("jwtPublicKey") || "./assets/oauth2/public.key";
+  let jwtPrivateKeyPath = strapi.plugin("strapi-plugin-oauth2").config("jwtPrivateKey") || "./assets/oauth2/private.key";
+  const jwtRS256Bits = strapi.plugin("strapi-plugin-oauth2").config("jwtRS256Bits") || 2048;
   jwtPublicKeyPath = path.join(process.cwd(), jwtPublicKeyPath);
   jwtPrivateKeyPath = path.join(process.cwd(), jwtPrivateKeyPath);
   if (jwtAlg === "RS256" && !fs.existsSync(jwtPublicKeyPath)) {
@@ -3192,67 +3192,67 @@ const bootstrap = async ({ strapi: strapi2 }) => {
       section: "plugins",
       displayName: "Read global settings",
       uid: "oauth-global-setting.read",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Update global settings",
       uid: "oauth-global-setting.update",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Read available scopes",
       uid: "oauth.read",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Create client",
       uid: "oauth-client.create",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Rotate client secret",
       uid: "oauth-client.rotate",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Read clients",
       uid: "oauth-client.read",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Update client",
       uid: "oauth-client.update",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Delete client",
       uid: "oauth-client.delete",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Read access tokens",
       uid: "oauth-access-token.read",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Revoke access token",
       uid: "oauth-access-token.revoke",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     },
     {
       section: "plugins",
       displayName: "Generate client keypair",
       uid: "oauth-client.generate-keypair",
-      pluginName: "oauth2"
+      pluginName: "strapi-plugin-oauth2"
     }
   ];
   strapi2.admin.services.permission.actionProvider.registerMany(actions);
@@ -3270,16 +3270,16 @@ const bootstrap = async ({ strapi: strapi2 }) => {
     });
     accessKey = result.accessKey;
   }
-  const globalSettings = await strapi2.documents("plugin::oauth2.oauth-global-setting").findFirst();
+  const globalSettings = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-global-setting").findFirst();
   if (!globalSettings) {
-    await strapi2.documents("plugin::oauth2.oauth-global-setting").create({
+    await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-global-setting").create({
       data: {
         systemAccessKey: accessKey,
         scopes: []
       }
     });
   } else if (accessKey && !globalSettings.systemAccessKey) {
-    await strapi2.documents("plugin::oauth2.oauth-global-setting").update({
+    await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-global-setting").update({
       documentId: globalSettings.documentId,
       data: {
         systemAccessKey: accessKey
@@ -3321,7 +3321,7 @@ const attributes$4 = {
   client: {
     type: "relation",
     relation: "manyToOne",
-    target: "plugin::oauth2.oauth-client",
+    target: "plugin::strapi-plugin-oauth2.oauth-client",
     required: true
   },
   expiresAt: {
@@ -3473,7 +3473,7 @@ const attributes$2 = {
   client: {
     type: "relation",
     relation: "manyToOne",
-    target: "plugin::oauth2.oauth-client"
+    target: "plugin::strapi-plugin-oauth2.oauth-client"
   },
   user: {
     type: "relation",
@@ -3538,7 +3538,7 @@ const attributes = {
   client: {
     type: "relation",
     relation: "manyToOne",
-    target: "plugin::oauth2.oauth-client"
+    target: "plugin::strapi-plugin-oauth2.oauth-client"
   },
   user: {
     type: "relation",
@@ -3649,13 +3649,13 @@ const handleError = (ctx, error) => {
 };
 const { ValidationError: ValidationError$5 } = utils.errors;
 const oauthAccessToken$2 = factories.createCoreController(
-  "plugin::oauth2.oauth-access-token",
+  "plugin::strapi-plugin-oauth2.oauth-access-token",
   ({ strapi: strapi2 }) => ({
     async introspect(ctx) {
       try {
         const token = ctx.request.body.token;
         if (!token) throw new ValidationError$5("token is required");
-        const res = await strapi2.service("plugin::oauth2.oauth-access-token").introspectByToken(token);
+        const res = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-access-token").introspectByToken(token);
         return res;
       } catch (err) {
         handleError(ctx, err);
@@ -3665,7 +3665,7 @@ const oauthAccessToken$2 = factories.createCoreController(
       try {
         const jti = ctx.request.body.jti;
         if (!jti) throw new ValidationError$5("jti is required");
-        const ok = await strapi2.service("plugin::oauth2.oauth-access-token").revokeTokenByJti(jti, ctx.state.user?.documentId);
+        const ok = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-access-token").revokeTokenByJti(jti, ctx.state.user?.documentId);
         return {
           revoked: ok
         };
@@ -3685,7 +3685,7 @@ const oauthAccessToken$2 = factories.createCoreController(
             });
           }
           return await strapi2.db.transaction(async () => {
-            const { client, authorizationUser, scopes } = await strapi2.service("plugin::oauth2.oauth-authorization-code").consumeAuthorizationCode({
+            const { client, authorizationUser, scopes } = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-authorization-code").consumeAuthorizationCode({
               rawCode: code,
               redirectUri: redirect_uri,
               codeVerifier: code_verifier
@@ -3706,7 +3706,7 @@ const oauthAccessToken$2 = factories.createCoreController(
                   error: "invalid_client_credentials"
                 });
               }
-              const validatedClient = await strapi2.service("plugin::oauth2.oauth-client").validateClientCredentials(clientId, clientSecret);
+              const validatedClient = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-client").validateClientCredentials(clientId, clientSecret);
               if (!validatedClient || validatedClient.id !== client.id) {
                 throw new UnauthorizedError$2("invalid_client_credentials", {
                   error: "invalid_client_credentials",
@@ -3714,7 +3714,7 @@ const oauthAccessToken$2 = factories.createCoreController(
                 });
               }
             }
-            const tokenResp = await strapi2.service("plugin::oauth2.oauth-access-token").issueAccessToken({
+            const tokenResp = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-access-token").issueAccessToken({
               grantType: grant_type,
               client,
               userDocumentId: authorizationUser.documentId,
@@ -3735,7 +3735,7 @@ const oauthAccessToken$2 = factories.createCoreController(
               message: "assertion is required"
             });
           }
-          const { client, decoded } = await strapi2.service("plugin::oauth2.oauth-access-token").verifyJWTBearer(assertion);
+          const { client, decoded } = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-access-token").verifyJWTBearer(assertion);
           if (client.clientType === "CONFIDENTIAL") {
             let clientId;
             let clientSecret;
@@ -3752,7 +3752,7 @@ const oauthAccessToken$2 = factories.createCoreController(
                 error: "invalid_client_credentials"
               });
             }
-            const validatedClient = await strapi2.service("plugin::oauth2.oauth-client").validateClientCredentials(clientId, clientSecret);
+            const validatedClient = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-client").validateClientCredentials(clientId, clientSecret);
             if (!validatedClient || validatedClient.id !== client.id) {
               throw new UnauthorizedError$2("invalid_client_credentials", {
                 error: "invalid_client_credentials",
@@ -3772,7 +3772,7 @@ const oauthAccessToken$2 = factories.createCoreController(
             });
           }
           const requestedScopes = decoded.scope.split(" ");
-          const globalSettings = await strapi2.documents("plugin::oauth2.oauth-global-setting").findFirst();
+          const globalSettings = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-global-setting").findFirst();
           const availableScopes = globalSettings?.scopes || [];
           if (!availableScopes.length) {
             throw new ValidationError$5("invalid_scope", {
@@ -3788,7 +3788,7 @@ const oauthAccessToken$2 = factories.createCoreController(
               });
             }
           }
-          const tokenResp = await strapi2.service("plugin::oauth2.oauth-access-token").issueAccessToken({
+          const tokenResp = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-access-token").issueAccessToken({
             grantType: grant_type,
             client,
             userDocumentId: client.user?.documentId,
@@ -3807,105 +3807,108 @@ const oauthAccessToken$2 = factories.createCoreController(
   })
 );
 const { NotFoundError: NotFoundError$3, ValidationError: ValidationError$4 } = utils.errors;
-const oauthClient$2 = factories.createCoreController("plugin::oauth2.oauth-client", ({ strapi: strapi2 }) => ({
-  async find(ctx) {
-    const filters = ctx.query?.filters || {};
-    if (ctx.state.user && ctx.state.auth?.strategy?.name !== "admin") {
-      _.set(filters, "user.documentId", ctx.state.user.documentId);
-    }
-    return await super.find({ ...ctx, query: { ...ctx.query, filters } });
-  },
-  async findOne(ctx) {
-    const filters = ctx.query?.filters || {};
-    if (ctx.state.user && ctx.state.auth?.strategy?.name !== "admin") {
-      _.set(filters, "user.documentId", ctx.state.user.documentId);
-    }
-    return await super.findOne({ ...ctx, query: { ...ctx.query, filters } });
-  },
-  async rotateSecret(ctx) {
-    try {
-      const { documentId } = ctx.params;
-      const entity = await strapi2.service("plugin::oauth2.oauth-client").rotateClientSecret(documentId, ctx.state.user?.documentId);
-      const sanitizedOutput = await this.sanitizeOutput(entity, ctx);
-      return this.transformResponse(sanitizedOutput);
-    } catch (err) {
-      handleError(ctx, err);
-    }
-  },
-  async findOneByClientId(ctx) {
-    try {
-      const { clientId } = ctx.params;
-      const scope = ctx.query?.scope;
-      if (!scope) {
-        throw new ValidationError$4("scope is required");
-      }
-      const scopes = scope.split(",");
-      const filters = {
-        clientId
-      };
-      if (ctx.state.user) {
+const oauthClient$2 = factories.createCoreController(
+  "plugin::strapi-plugin-oauth2.oauth-client",
+  ({ strapi: strapi2 }) => ({
+    async find(ctx) {
+      const filters = ctx.query?.filters || {};
+      if (ctx.state.user && ctx.state.auth?.strategy?.name !== "admin") {
         _.set(filters, "user.documentId", ctx.state.user.documentId);
       }
-      const client = await strapi2.documents("plugin::oauth2.oauth-client").findFirst({
-        filters
-      });
-      if (!client) throw new NotFoundError$3("client_not_found");
-      let availableScopes = { ...client.scopes };
-      if (client.createdType === "USER") {
-        const globalSettings = await strapi2.documents("plugin::oauth2.oauth-global-setting").findFirst();
-        availableScopes = globalSettings?.scopes || {};
-        if (!availableScopes?.length) {
-          throw new ValidationError$4("no_available_scopes_defined");
-        }
+      return await super.find({ ...ctx, query: { ...ctx.query, filters } });
+    },
+    async findOne(ctx) {
+      const filters = ctx.query?.filters || {};
+      if (ctx.state.user && ctx.state.auth?.strategy?.name !== "admin") {
+        _.set(filters, "user.documentId", ctx.state.user.documentId);
       }
-      const clientUser = await strapi2.documents("plugin::oauth2.oauth-user").findFirst({
-        filters: {
-          userDocumentId: ctx.state.user?.documentId,
-          clientId: client.clientId
-        }
-      });
-      for (const s2 of scopes) {
-        if (!availableScopes.includes(s2)) {
-          throw new ValidationError$4(`invalid_scope: ${s2}`);
-        }
+      return await super.findOne({ ...ctx, query: { ...ctx.query, filters } });
+    },
+    async rotateSecret(ctx) {
+      try {
+        const { documentId } = ctx.params;
+        const entity = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-client").rotateClientSecret(documentId, ctx.state.user?.documentId);
+        const sanitizedOutput = await this.sanitizeOutput(entity, ctx);
+        return this.transformResponse(sanitizedOutput);
+      } catch (err) {
+        handleError(ctx, err);
       }
-      return {
-        documentId: client.documentId,
-        clientId: client.clientId,
-        userId: client.user?.documentId,
-        clientType: client.clientType,
-        name: client.name,
-        scopes,
-        grantedScopes: clientUser?.scopes || [],
-        redirectUris: client.redirectUris,
-        meta: client.meta
-      };
-    } catch (err) {
-      handleError(ctx, err);
+    },
+    async findOneByClientId(ctx) {
+      try {
+        const { clientId } = ctx.params;
+        const scope = ctx.query?.scope;
+        if (!scope) {
+          throw new ValidationError$4("scope is required");
+        }
+        const scopes = scope.split(",");
+        const filters = {
+          clientId
+        };
+        if (ctx.state.user) {
+          _.set(filters, "user.documentId", ctx.state.user.documentId);
+        }
+        const client = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").findFirst({
+          filters
+        });
+        if (!client) throw new NotFoundError$3("client_not_found");
+        let availableScopes = { ...client.scopes };
+        if (client.createdType === "USER") {
+          const globalSettings = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-global-setting").findFirst();
+          availableScopes = globalSettings?.scopes || {};
+          if (!availableScopes?.length) {
+            throw new ValidationError$4("no_available_scopes_defined");
+          }
+        }
+        const clientUser = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-user").findFirst({
+          filters: {
+            userDocumentId: ctx.state.user?.documentId,
+            clientId: client.clientId
+          }
+        });
+        for (const s2 of scopes) {
+          if (!availableScopes.includes(s2)) {
+            throw new ValidationError$4(`invalid_scope: ${s2}`);
+          }
+        }
+        return {
+          documentId: client.documentId,
+          clientId: client.clientId,
+          userId: client.user?.documentId,
+          clientType: client.clientType,
+          name: client.name,
+          scopes,
+          grantedScopes: clientUser?.scopes || [],
+          redirectUris: client.redirectUris,
+          meta: client.meta
+        };
+      } catch (err) {
+        handleError(ctx, err);
+      }
+    },
+    async generateKeyPair(ctx) {
+      try {
+        const { documentId } = ctx.params;
+        const entity = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-client").generateKeyPair(documentId);
+        const sanitizedOutput = await this.sanitizeOutput(entity, ctx);
+        return this.transformResponse(sanitizedOutput);
+      } catch (err) {
+        handleError(ctx, err);
+      }
+    },
+    async delete(ctx) {
+      try {
+        return await super.delete(ctx);
+      } catch (err) {
+        handleError(ctx, err);
+      }
     }
-  },
-  async generateKeyPair(ctx) {
-    try {
-      const { documentId } = ctx.params;
-      const entity = await strapi2.service("plugin::oauth2.oauth-client").generateKeyPair(documentId);
-      const sanitizedOutput = await this.sanitizeOutput(entity, ctx);
-      return this.transformResponse(sanitizedOutput);
-    } catch (err) {
-      handleError(ctx, err);
-    }
-  },
-  async delete(ctx) {
-    try {
-      return await super.delete(ctx);
-    } catch (err) {
-      handleError(ctx, err);
-    }
-  }
-}));
-const oauthGlobalSetting$2 = factories.createCoreController("plugin::oauth2.oauth-global-setting");
+  })
+);
+const oauthGlobalSetting$2 = factories.createCoreController("plugin::strapi-plugin-oauth2.oauth-global-setting");
 const { ValidationError: ValidationError$3, UnauthorizedError } = utils.errors;
 const oauthAuthorizationCode$2 = factories.createCoreController(
-  "plugin::oauth2.oauth-authorization-code",
+  "plugin::strapi-plugin-oauth2.oauth-authorization-code",
   ({ strapi: strapi2 }) => ({
     async authorize(ctx) {
       const { approve, clientId, redirectUri, scopes, state, codeChallenge, codeChallengeMethod } = ctx.request.body;
@@ -3940,7 +3943,7 @@ const oauthAuthorizationCode$2 = factories.createCoreController(
       try {
         const token = ctx.request.body.token;
         if (!token) throw new ValidationError$3("token is required");
-        const res = await strapi2.service("plugin::oauth2.oauth-access-token").introspectByToken(token);
+        const res = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-access-token").introspectByToken(token);
         return res;
       } catch (err) {
         handleError(ctx, err);
@@ -3950,7 +3953,7 @@ const oauthAuthorizationCode$2 = factories.createCoreController(
       try {
         const jti = ctx.request.body.jti;
         if (!jti) throw new ValidationError$3("jti is required");
-        const ok = await strapi2.service("plugin::oauth2.oauth-access-token").revokeTokenByJti(jti, ctx.state.user?.documentId);
+        const ok = await strapi2.service("plugin::strapi-plugin-oauth2.oauth-access-token").revokeTokenByJti(jti, ctx.state.user?.documentId);
         return {
           revoked: ok
         };
@@ -3979,11 +3982,11 @@ const oauthVerifyToken = () => {
     if (!decoded?.aud || decoded.aud !== audience) {
       return await next();
     }
-    const introspect = await strapi.service("plugin::oauth2.oauth-access-token").introspectByToken(token);
+    const introspect = await strapi.service("plugin::strapi-plugin-oauth2.oauth-access-token").introspectByToken(token);
     if (!introspect || !introspect.active) {
       return ctx.throw(401, "token_user_mismatch");
     }
-    const oauthUser2 = await strapi.documents("plugin::oauth2.oauth-user").findFirst({
+    const oauthUser2 = await strapi.documents("plugin::strapi-plugin-oauth2.oauth-user").findFirst({
       filters: {
         clientId: introspect.clientId,
         userDocumentId: introspect.userId
@@ -4192,7 +4195,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-global-setting.read"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-global-setting.read"]
           }
         }
       ]
@@ -4207,7 +4210,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-global-setting.update"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-global-setting.update"]
           }
         }
       ]
@@ -4222,7 +4225,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth.read"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth.read"]
           }
         }
       ]
@@ -4237,7 +4240,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-client.create"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-client.create"]
           }
         }
       ]
@@ -4252,7 +4255,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-client.rotate"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-client.rotate"]
           }
         }
       ]
@@ -4267,7 +4270,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-client.read"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-client.read"]
           }
         }
       ]
@@ -4282,7 +4285,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-client.update"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-client.update"]
           }
         }
       ]
@@ -4297,7 +4300,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-client.delete"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-client.delete"]
           }
         }
       ]
@@ -4312,7 +4315,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-access-token.read"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-access-token.read"]
           }
         }
       ]
@@ -4327,7 +4330,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-access-token.revoke"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-access-token.revoke"]
           }
         }
       ]
@@ -4342,7 +4345,7 @@ const oauth = [
         {
           name: "admin::hasPermissions",
           config: {
-            actions: ["plugin::oauth2.oauth-client.generate-keypair"]
+            actions: ["plugin::strapi-plugin-oauth2.oauth-client.generate-keypair"]
           }
         }
       ]
@@ -4358,327 +4361,333 @@ const routes = {
   admin
 };
 const { ValidationError: ValidationError$2, NotFoundError: NotFoundError$2 } = utils.errors;
-const oauthAccessToken = factories.createCoreService("plugin::oauth2.oauth-access-token", ({ strapi: strapi2 }) => ({
-  // issue token (JWT) and store record
-  async issueAccessToken({ grantType, client, userDocumentId, scope }) {
-    const { accessTokenTTL, audience } = getOAuthConfig();
-    const now = Math.floor(Date.now() / 1e3);
-    const jti = generateJti();
-    const payload = {
-      iss: userDocumentId,
-      sub: client.clientId,
-      aud: audience,
-      iat: now,
-      jti,
-      scope
-    };
-    const token = signJWT(payload, { expiresIn: accessTokenTTL });
-    const expiresAt = new Date(Date.now() + accessTokenTTL * 1e3);
-    const entity = await strapi2.documents("plugin::oauth2.oauth-access-token").create({
-      data: {
-        accessToken: token,
+const oauthAccessToken = factories.createCoreService(
+  "plugin::strapi-plugin-oauth2.oauth-access-token",
+  ({ strapi: strapi2 }) => ({
+    // issue token (JWT) and store record
+    async issueAccessToken({ grantType, client, userDocumentId, scope }) {
+      const { accessTokenTTL, audience } = getOAuthConfig();
+      const now = Math.floor(Date.now() / 1e3);
+      const jti = generateJti();
+      const payload = {
+        iss: userDocumentId,
+        sub: client.clientId,
+        aud: audience,
+        iat: now,
         jti,
-        client: client.documentId,
-        expiresAt: expiresAt.toISOString(),
-        scope: payload.scope,
-        user: userDocumentId,
-        grantType
-      },
-      populate: {
-        user: true
+        scope
+      };
+      const token = signJWT(payload, { expiresIn: accessTokenTTL });
+      const expiresAt = new Date(Date.now() + accessTokenTTL * 1e3);
+      const entity = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-access-token").create({
+        data: {
+          accessToken: token,
+          jti,
+          client: client.documentId,
+          expiresAt: expiresAt.toISOString(),
+          scope: payload.scope,
+          user: userDocumentId,
+          grantType
+        },
+        populate: {
+          user: true
+        }
+      });
+      return {
+        accessToken: entity.accessToken,
+        tokenType: "Bearer",
+        expiresIn: accessTokenTTL,
+        scope: payload.scope
+      };
+    },
+    // introspect by token or jti
+    async introspectByToken(token, userDocumentId) {
+      const res = verifyJWT(token);
+      if (!res.ok) return { active: false };
+      const decoded = res.decoded;
+      if (typeof decoded === "string") return { active: false };
+      const rec = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-access-token").findFirst({
+        filters: { jti: decoded.jti }
+      });
+      if (!rec) return { active: false };
+      const ctx = strapi2.requestContext.get();
+      if (ctx.state.auth?.strategy?.name !== "admin" && userDocumentId && rec.user.documentId !== userDocumentId) {
+        return false;
       }
-    });
-    return {
-      accessToken: entity.accessToken,
-      tokenType: "Bearer",
-      expiresIn: accessTokenTTL,
-      scope: payload.scope
-    };
-  },
-  // introspect by token or jti
-  async introspectByToken(token, userDocumentId) {
-    const res = verifyJWT(token);
-    if (!res.ok) return { active: false };
-    const decoded = res.decoded;
-    if (typeof decoded === "string") return { active: false };
-    const rec = await strapi2.documents("plugin::oauth2.oauth-access-token").findFirst({
-      filters: { jti: decoded.jti }
-    });
-    if (!rec) return { active: false };
-    const ctx = strapi2.requestContext.get();
-    if (ctx.state.auth?.strategy?.name !== "admin" && userDocumentId && rec.user.documentId !== userDocumentId) {
-      return false;
-    }
-    if (rec.revokedAt) return { active: false };
-    if (new Date(rec.expiresAt) <= /* @__PURE__ */ new Date()) return { active: false };
-    return {
-      active: true,
-      grantType: rec.grantType,
-      clientId: decoded.sub,
-      userId: decoded.iss,
-      audience: decoded.aud,
-      scope: decoded.scope,
-      exp: decoded.exp,
-      iat: decoded.iat,
-      jti: decoded.jti
-    };
-  },
-  async revokeTokenByJti(jti, userDocumentId) {
-    const rec = await strapi2.documents("plugin::oauth2.oauth-access-token").findFirst({
-      filters: { jti },
-      populate: {
-        user: true
+      if (rec.revokedAt) return { active: false };
+      if (new Date(rec.expiresAt) <= /* @__PURE__ */ new Date()) return { active: false };
+      return {
+        active: true,
+        grantType: rec.grantType,
+        clientId: decoded.sub,
+        userId: decoded.iss,
+        audience: decoded.aud,
+        scope: decoded.scope,
+        exp: decoded.exp,
+        iat: decoded.iat,
+        jti: decoded.jti
+      };
+    },
+    async revokeTokenByJti(jti, userDocumentId) {
+      const rec = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-access-token").findFirst({
+        filters: { jti },
+        populate: {
+          user: true
+        }
+      });
+      if (!rec) return false;
+      const ctx = strapi2.requestContext.get();
+      if (ctx.state.auth?.strategy?.name !== "admin" && userDocumentId && rec.user.documentId !== userDocumentId) {
+        return false;
       }
-    });
-    if (!rec) return false;
-    const ctx = strapi2.requestContext.get();
-    if (ctx.state.auth?.strategy?.name !== "admin" && userDocumentId && rec.user.documentId !== userDocumentId) {
-      return false;
-    }
-    await strapi2.documents("plugin::oauth2.oauth-access-token").update({
-      documentId: rec.documentId,
-      data: {
-        revokedAt: (/* @__PURE__ */ new Date()).toISOString()
-      }
-    });
-    return true;
-  },
-  async verifyJWTBearer(assertion) {
-    let decoded;
-    try {
-      decoded = jwt.decode(assertion, { complete: true });
-    } catch (err) {
-      throw new ValidationError$2("invalid_request", {
-        error: "invalid_request",
-        message: "invalid JWT format"
+      await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-access-token").update({
+        documentId: rec.documentId,
+        data: {
+          revokedAt: (/* @__PURE__ */ new Date()).toISOString()
+        }
       });
-    }
-    if (!decoded || typeof decoded !== "object") {
-      throw new ValidationError$2("invalid_request", {
-        error: "invalid_request",
-        message: "invalid JWT"
-      });
-    }
-    const payload = decoded.payload || {};
-    const clientId = payload.sub;
-    if (!clientId) {
-      throw new ValidationError$2("invalid_client", {
-        error: "invalid_client",
-        message: "iss or sub is required"
-      });
-    }
-    const client = await strapi2.documents("plugin::oauth2.oauth-client").findFirst({
-      filters: {
-        clientId
-      },
-      populate: {
-        user: true
-      }
-    });
-    if (!client) {
-      throw new ValidationError$2("invalid_client", {
-        error: "invalid_client"
-      });
-    }
-    if (!client.publicKey || client.jwtAlg !== "RS256") {
-      throw new ValidationError$2("invalid_client", {
-        error: "invalid_client",
-        message: "client does not support jwt-bearer"
-      });
-    }
-    const res = verifyJWT(assertion, {
-      jwtAlgOverride: "RS256",
-      verifyKeyOverride: client.publicKey
-    });
-    if (!res.ok) {
-      throw new ValidationError$2("invalid_grant", {
-        error: "invalid_grant",
-        message: res.err.message || "invalid or expired assertion"
-      });
-    }
-    const verified = res.decoded;
-    if (verified.iss !== client.user.documentId) {
-      throw new ValidationError$2("invalid_grant", {
-        error: "invalid_grant",
-        message: "user mismatch"
-      });
-    }
-    const { audience, maxAssertionTtl } = getOAuthConfig();
-    if (verified.aud !== audience) {
-      throw new ValidationError$2("invalid_grant", {
-        error: "invalid_grant",
-        message: "audience mismatch"
-      });
-    }
-    if (typeof verified.iat === "number" && typeof verified.exp === "number") {
-      const ttl = verified.exp - verified.iat;
-      if (ttl > maxAssertionTtl) {
-        throw new ValidationError$2("invalid_grant", {
-          error: "invalid_grant",
-          message: "assertion lifetime too long"
+      return true;
+    },
+    async verifyJWTBearer(assertion) {
+      let decoded;
+      try {
+        decoded = jwt.decode(assertion, { complete: true });
+      } catch (err) {
+        throw new ValidationError$2("invalid_request", {
+          error: "invalid_request",
+          message: "invalid JWT format"
         });
       }
+      if (!decoded || typeof decoded !== "object") {
+        throw new ValidationError$2("invalid_request", {
+          error: "invalid_request",
+          message: "invalid JWT"
+        });
+      }
+      const payload = decoded.payload || {};
+      const clientId = payload.sub;
+      if (!clientId) {
+        throw new ValidationError$2("invalid_client", {
+          error: "invalid_client",
+          message: "iss or sub is required"
+        });
+      }
+      const client = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").findFirst({
+        filters: {
+          clientId
+        },
+        populate: {
+          user: true
+        }
+      });
+      if (!client) {
+        throw new ValidationError$2("invalid_client", {
+          error: "invalid_client"
+        });
+      }
+      if (!client.publicKey || client.jwtAlg !== "RS256") {
+        throw new ValidationError$2("invalid_client", {
+          error: "invalid_client",
+          message: "client does not support jwt-bearer"
+        });
+      }
+      const res = verifyJWT(assertion, {
+        jwtAlgOverride: "RS256",
+        verifyKeyOverride: client.publicKey
+      });
+      if (!res.ok) {
+        throw new ValidationError$2("invalid_grant", {
+          error: "invalid_grant",
+          message: res.err.message || "invalid or expired assertion"
+        });
+      }
+      const verified = res.decoded;
+      if (verified.iss !== client.user.documentId) {
+        throw new ValidationError$2("invalid_grant", {
+          error: "invalid_grant",
+          message: "user mismatch"
+        });
+      }
+      const { audience, maxAssertionTtl } = getOAuthConfig();
+      if (verified.aud !== audience) {
+        throw new ValidationError$2("invalid_grant", {
+          error: "invalid_grant",
+          message: "audience mismatch"
+        });
+      }
+      if (typeof verified.iat === "number" && typeof verified.exp === "number") {
+        const ttl = verified.exp - verified.iat;
+        if (ttl > maxAssertionTtl) {
+          throw new ValidationError$2("invalid_grant", {
+            error: "invalid_grant",
+            message: "assertion lifetime too long"
+          });
+        }
+      }
+      return {
+        client,
+        decoded: verified
+      };
     }
-    return {
-      client,
-      decoded: verified
-    };
-  }
-}));
+  })
+);
 const { ValidationError: ValidationError$1, NotFoundError: NotFoundError$1 } = utils.errors;
-const oauthClient = factories.createCoreService("plugin::oauth2.oauth-client", ({ strapi: strapi2 }) => ({
-  async findOne(documentId, params) {
-    const ctx = strapi2.requestContext.get();
-    documentId = documentId || ctx?.params?.documentId;
-    if (!documentId) {
-      throw new ValidationError$1("documentId is required");
-    }
-    params = params || { ...ctx.query };
-    return await super.findOne(documentId, params);
-  },
-  async create(params) {
-    const { data } = params;
-    const ctx = strapi2.requestContext.get();
-    if (!ctx?.state.user) {
-      throw new ValidationError$1("user is required");
-    }
-    const clientId = generateClientId();
-    const rawSecret = generateRawSecret(32);
-    const secretHash = await hashSecret(rawSecret);
-    const { publicKey, privateKey } = generateRSAKeyPair();
-    let userDocumentId = data.user;
-    const createdType = ctx.state.auth?.strategy?.name === "admin" ? "BACK_OFFICE" : "USER";
-    if (createdType === "USER") {
-      userDocumentId = ctx.state.user.documentId;
-    }
-    const entity = await strapi2.documents("plugin::oauth2.oauth-client").create({
-      data: {
-        ...data,
-        clientId,
-        clientSecretHash: secretHash,
-        user: userDocumentId,
-        createdType,
-        jwtAlg: "RS256",
-        publicKey
-      },
-      populate: {
-        user: true
+const oauthClient = factories.createCoreService(
+  "plugin::strapi-plugin-oauth2.oauth-client",
+  ({ strapi: strapi2 }) => ({
+    async findOne(documentId, params) {
+      const ctx = strapi2.requestContext.get();
+      documentId = documentId || ctx?.params?.documentId;
+      if (!documentId) {
+        throw new ValidationError$1("documentId is required");
       }
-    });
-    return {
-      ...entity,
-      clientSecret: rawSecret,
-      privateKey
-    };
-  },
-  async rotateClientSecret(documentId, userDocumentId) {
-    const ctx = strapi2.requestContext.get();
-    const client = await strapi2.documents("plugin::oauth2.oauth-client").findFirst({
-      filters: { documentId, active: true },
-      populate: {
-        user: true
+      params = params || { ...ctx.query };
+      return await super.findOne(documentId, params);
+    },
+    async create(params) {
+      const { data } = params;
+      const ctx = strapi2.requestContext.get();
+      if (!ctx?.state.user) {
+        throw new ValidationError$1("user is required");
       }
-    });
-    if (!client) throw new NotFoundError$1("client_not_found");
-    if (ctx.state.auth?.strategy?.name !== "admin" && client.user?.documentId !== userDocumentId) {
-      throw new ValidationError$1("invalid_user");
-    }
-    const rawSecret = generateRawSecret(32);
-    const secretHash = await hashSecret(rawSecret);
-    await strapi2.documents("plugin::oauth2.oauth-client").update({
-      documentId: client.documentId,
-      data: {
-        clientSecretHash: secretHash
+      const clientId = generateClientId();
+      const rawSecret = generateRawSecret(32);
+      const secretHash = await hashSecret(rawSecret);
+      const { publicKey, privateKey } = generateRSAKeyPair();
+      let userDocumentId = data.user;
+      const createdType = ctx.state.auth?.strategy?.name === "admin" ? "BACK_OFFICE" : "USER";
+      if (createdType === "USER") {
+        userDocumentId = ctx.state.user.documentId;
       }
-    });
-    return {
-      ...client,
-      clientSecret: rawSecret
-    };
-  },
-  async update(documentId, params) {
-    const ctx = strapi2.requestContext.get();
-    documentId = documentId || ctx?.params?.documentId;
-    if (!documentId) {
-      throw new ValidationError$1("documentId is required");
-    }
-    params = params || { ...ctx.query };
-    return await super.update(documentId, params);
-  },
-  async delete(documentId, params) {
-    const ctx = strapi2.requestContext.get();
-    documentId = documentId || ctx?.params?.documentId;
-    if (!documentId) {
-      throw new ValidationError$1("documentId is required");
-    }
-    params = params || { ...ctx.query };
-    _.set(params, "populate.user", true);
-    const entity = await strapi2.documents("plugin::oauth2.oauth-client").findOne({
-      documentId,
-      ...params
-    });
-    if (!entity) throw new NotFoundError$1("client_not_found");
-    if (ctx.state.auth?.strategy?.name !== "admin" && entity.user?.documentId !== ctx?.state.user?.documentId) {
-      throw new ValidationError$1("invalid_client_owner");
-    }
-    if (ctx.state.auth?.strategy?.name !== "admin" && entity.createdType !== "USER") {
-      throw new ValidationError$1("cannot_delete_system_client");
-    }
-    return await strapi2.db.transaction(async () => {
-      await strapi2.db.query("plugin::oauth2.oauth-access-token").deleteMany({
-        where: {
-          client: {
-            documentId
-          }
+      const entity = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").create({
+        data: {
+          ...data,
+          clientId,
+          clientSecretHash: secretHash,
+          user: userDocumentId,
+          createdType,
+          jwtAlg: "RS256",
+          publicKey
+        },
+        populate: {
+          user: true
         }
       });
-      await strapi2.db.query("plugin::oauth2.oauth-authorization-code").deleteMany({
-        where: {
-          client: {
-            documentId
-          }
+      return {
+        ...entity,
+        clientSecret: rawSecret,
+        privateKey
+      };
+    },
+    async rotateClientSecret(documentId, userDocumentId) {
+      const ctx = strapi2.requestContext.get();
+      const client = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").findFirst({
+        filters: { documentId, active: true },
+        populate: {
+          user: true
         }
       });
-      await strapi2.db.query("plugin::oauth2.oauth-user").deleteMany({
-        where: {
-          client: {
-            documentId
-          }
-        }
-      });
-      await await super.delete(documentId, params);
-    });
-  },
-  async validateClientCredentials(clientId, clientSecret) {
-    const client = await strapi2.documents("plugin::oauth2.oauth-client").findFirst({
-      filters: { clientId, active: true }
-    });
-    if (!client) return null;
-    const ok = await verifySecret(clientSecret, client.clientSecretHash);
-    return ok ? client : null;
-  },
-  async generateKeyPair(clientDocumentId) {
-    const { publicKey, privateKey } = generateRSAKeyPair();
-    const client = await strapi2.documents("plugin::oauth2.oauth-client").update({
-      documentId: clientDocumentId,
-      data: {
-        jwtAlg: "RS256",
-        publicKey
-      },
-      populate: {
-        user: true
+      if (!client) throw new NotFoundError$1("client_not_found");
+      if (ctx.state.auth?.strategy?.name !== "admin" && client.user?.documentId !== userDocumentId) {
+        throw new ValidationError$1("invalid_user");
       }
-    });
-    return {
-      ...client,
-      privateKey
-    };
-  }
-}));
-const oauthGlobalSetting = factories.createCoreService("plugin::oauth2.oauth-global-setting");
+      const rawSecret = generateRawSecret(32);
+      const secretHash = await hashSecret(rawSecret);
+      await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").update({
+        documentId: client.documentId,
+        data: {
+          clientSecretHash: secretHash
+        }
+      });
+      return {
+        ...client,
+        clientSecret: rawSecret
+      };
+    },
+    async update(documentId, params) {
+      const ctx = strapi2.requestContext.get();
+      documentId = documentId || ctx?.params?.documentId;
+      if (!documentId) {
+        throw new ValidationError$1("documentId is required");
+      }
+      params = params || { ...ctx.query };
+      return await super.update(documentId, params);
+    },
+    async delete(documentId, params) {
+      const ctx = strapi2.requestContext.get();
+      documentId = documentId || ctx?.params?.documentId;
+      if (!documentId) {
+        throw new ValidationError$1("documentId is required");
+      }
+      params = params || { ...ctx.query };
+      _.set(params, "populate.user", true);
+      const entity = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").findOne({
+        documentId,
+        ...params
+      });
+      if (!entity) throw new NotFoundError$1("client_not_found");
+      if (ctx.state.auth?.strategy?.name !== "admin" && entity.user?.documentId !== ctx?.state.user?.documentId) {
+        throw new ValidationError$1("invalid_client_owner");
+      }
+      if (ctx.state.auth?.strategy?.name !== "admin" && entity.createdType !== "USER") {
+        throw new ValidationError$1("cannot_delete_system_client");
+      }
+      return await strapi2.db.transaction(async () => {
+        await strapi2.db.query("plugin::strapi-plugin-oauth2.oauth-access-token").deleteMany({
+          where: {
+            client: {
+              documentId
+            }
+          }
+        });
+        await strapi2.db.query("plugin::strapi-plugin-oauth2.oauth-authorization-code").deleteMany({
+          where: {
+            client: {
+              documentId
+            }
+          }
+        });
+        await strapi2.db.query("plugin::strapi-plugin-oauth2.oauth-user").deleteMany({
+          where: {
+            client: {
+              documentId
+            }
+          }
+        });
+        await await super.delete(documentId, params);
+      });
+    },
+    async validateClientCredentials(clientId, clientSecret) {
+      const client = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").findFirst({
+        filters: { clientId, active: true }
+      });
+      if (!client) return null;
+      const ok = await verifySecret(clientSecret, client.clientSecretHash);
+      return ok ? client : null;
+    },
+    async generateKeyPair(clientDocumentId) {
+      const { publicKey, privateKey } = generateRSAKeyPair();
+      const client = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").update({
+        documentId: clientDocumentId,
+        data: {
+          jwtAlg: "RS256",
+          publicKey
+        },
+        populate: {
+          user: true
+        }
+      });
+      return {
+        ...client,
+        privateKey
+      };
+    }
+  })
+);
+const oauthGlobalSetting = factories.createCoreService("plugin::strapi-plugin-oauth2.oauth-global-setting");
 const { ValidationError, NotFoundError } = utils.errors;
 const oauthAuthorizationCode = factories.createCoreService(
-  "plugin::oauth2.oauth-authorization-code",
+  "plugin::strapi-plugin-oauth2.oauth-authorization-code",
   ({ strapi: strapi2 }) => ({
     async createAuthorizationCode({
       clientId,
@@ -4689,7 +4698,7 @@ const oauthAuthorizationCode = factories.createCoreService(
       codeChallengeMethod
     }) {
       const { authCodeTtlSeconds } = getOAuthConfig();
-      const oauthClient2 = await strapi2.documents("plugin::oauth2.oauth-client").findFirst({
+      const oauthClient2 = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-client").findFirst({
         filters: {
           clientId
         },
@@ -4710,7 +4719,7 @@ const oauthAuthorizationCode = factories.createCoreService(
       }
       let availableScopes = { ...oauthClient2.scopes };
       if (oauthClient2.createdType === "USER") {
-        const globalSettings = await strapi2.documents("plugin::oauth2.oauth-global-setting").findFirst();
+        const globalSettings = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-global-setting").findFirst();
         availableScopes = globalSettings?.scopes || {};
         if (!availableScopes?.length) {
           throw new ValidationError("no_available_scopes_defined");
@@ -4725,7 +4734,7 @@ const oauthAuthorizationCode = factories.createCoreService(
       const codeHash = hashValue(rawCode);
       const expiresAt = new Date(Date.now() + authCodeTtlSeconds * 1e3).toISOString();
       await strapi2.db.transaction(async () => {
-        await strapi2.documents("plugin::oauth2.oauth-authorization-code").create({
+        await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-authorization-code").create({
           data: {
             codeHash,
             client: oauthClient2.documentId,
@@ -4754,14 +4763,14 @@ const oauthAuthorizationCode = factories.createCoreService(
           apiTokenId = result.id;
           apiTokenAccessKey = result.accessKey;
         }
-        const userClient = await strapi2.documents("plugin::oauth2.oauth-user").findFirst({
+        const userClient = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-user").findFirst({
           filters: {
             userDocumentId,
             clientId: oauthClient2.clientId
           }
         });
         if (!userClient) {
-          await strapi2.documents("plugin::oauth2.oauth-user").create({
+          await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-user").create({
             data: {
               userDocumentId,
               clientId: oauthClient2.clientId,
@@ -4784,7 +4793,7 @@ const oauthAuthorizationCode = factories.createCoreService(
               permissions: scopes
             });
           }
-          await strapi2.documents("plugin::oauth2.oauth-user").update({
+          await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-user").update({
             documentId: userClient.documentId,
             data: newData
           });
@@ -4794,7 +4803,7 @@ const oauthAuthorizationCode = factories.createCoreService(
     },
     async consumeAuthorizationCode({ rawCode, redirectUri, codeVerifier = null }) {
       const codeHash = hashValue(rawCode);
-      const rec = await strapi2.documents("plugin::oauth2.oauth-authorization-code").findFirst({
+      const rec = await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-authorization-code").findFirst({
         filters: {
           codeHash
         },
@@ -4826,7 +4835,7 @@ const oauthAuthorizationCode = factories.createCoreService(
         const ok = verifyPkce(codeVerifier, rec.codeChallenge, rec.codeChallengeMethod);
         if (!ok) throw new ValidationError("invalid_code_verifier");
       }
-      await strapi2.documents("plugin::oauth2.oauth-authorization-code").update({
+      await strapi2.documents("plugin::strapi-plugin-oauth2.oauth-authorization-code").update({
         documentId: rec.documentId,
         data: {
           usedAt: (/* @__PURE__ */ new Date()).toISOString()

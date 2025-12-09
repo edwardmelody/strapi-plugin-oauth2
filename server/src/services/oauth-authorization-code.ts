@@ -6,7 +6,7 @@ import utils from '@strapi/utils';
 const { ValidationError, NotFoundError } = utils.errors;
 
 export default factories.createCoreService(
-  'plugin::oauth2.oauth-authorization-code',
+  'plugin::strapi-plugin-oauth2.oauth-authorization-code',
   ({ strapi }) => ({
     async createAuthorizationCode({
       clientId,
@@ -19,14 +19,16 @@ export default factories.createCoreService(
       const { authCodeTtlSeconds } = getOAuthConfig();
 
       // find client
-      const oauthClient = await strapi.documents('plugin::oauth2.oauth-client').findFirst({
-        filters: {
-          clientId,
-        },
-        populate: {
-          user: true,
-        },
-      });
+      const oauthClient = await strapi
+        .documents('plugin::strapi-plugin-oauth2.oauth-client')
+        .findFirst({
+          filters: {
+            clientId,
+          },
+          populate: {
+            user: true,
+          },
+        });
       if (!oauthClient) throw new NotFoundError('invalid_client');
       if (oauthClient.clientType === 'PUBLIC') {
         if (!codeChallenge) {
@@ -44,7 +46,7 @@ export default factories.createCoreService(
       let availableScopes = { ...oauthClient.scopes };
       if (oauthClient.createdType === 'USER') {
         const globalSettings = await strapi
-          .documents('plugin::oauth2.oauth-global-setting')
+          .documents('plugin::strapi-plugin-oauth2.oauth-global-setting')
           .findFirst();
         availableScopes = globalSettings?.scopes || {};
 
@@ -66,7 +68,7 @@ export default factories.createCoreService(
 
       await strapi.db.transaction(async () => {
         // create record
-        await strapi.documents('plugin::oauth2.oauth-authorization-code').create({
+        await strapi.documents('plugin::strapi-plugin-oauth2.oauth-authorization-code').create({
           data: {
             codeHash,
             client: oauthClient.documentId,
@@ -98,15 +100,17 @@ export default factories.createCoreService(
           apiTokenAccessKey = result.accessKey;
         }
 
-        const userClient = await strapi.documents('plugin::oauth2.oauth-user').findFirst({
-          filters: {
-            userDocumentId: userDocumentId,
-            clientId: oauthClient.clientId,
-          },
-        });
+        const userClient = await strapi
+          .documents('plugin::strapi-plugin-oauth2.oauth-user')
+          .findFirst({
+            filters: {
+              userDocumentId: userDocumentId,
+              clientId: oauthClient.clientId,
+            },
+          });
         if (!userClient) {
           // create user-client record
-          await strapi.documents('plugin::oauth2.oauth-user').create({
+          await strapi.documents('plugin::strapi-plugin-oauth2.oauth-user').create({
             data: {
               userDocumentId: userDocumentId,
               clientId: oauthClient.clientId,
@@ -131,7 +135,7 @@ export default factories.createCoreService(
               permissions: scopes,
             });
           }
-          await strapi.documents('plugin::oauth2.oauth-user').update({
+          await strapi.documents('plugin::strapi-plugin-oauth2.oauth-user').update({
             documentId: userClient.documentId,
             data: newData as any,
           });
@@ -143,20 +147,22 @@ export default factories.createCoreService(
     async consumeAuthorizationCode({ rawCode, redirectUri, codeVerifier = null }) {
       const codeHash = hashValue(rawCode);
       // find row (and ensure not used and not expired)
-      const rec = await strapi.documents('plugin::oauth2.oauth-authorization-code').findFirst({
-        filters: {
-          codeHash,
-        },
-        populate: {
-          client: {
-            populate: {
-              user: true,
-            },
+      const rec = await strapi
+        .documents('plugin::strapi-plugin-oauth2.oauth-authorization-code')
+        .findFirst({
+          filters: {
+            codeHash,
           },
-          user: true,
-        },
-        sort: { createdAt: 'desc' },
-      });
+          populate: {
+            client: {
+              populate: {
+                user: true,
+              },
+            },
+            user: true,
+          },
+          sort: { createdAt: 'desc' },
+        });
       if (!rec) throw new NotFoundError('invalid_grant');
 
       if (rec.usedAt) throw new ValidationError('invalid_grant_already_used');
@@ -183,7 +189,7 @@ export default factories.createCoreService(
       }
 
       // mark used
-      await strapi.documents('plugin::oauth2.oauth-authorization-code').update({
+      await strapi.documents('plugin::strapi-plugin-oauth2.oauth-authorization-code').update({
         documentId: rec.documentId,
         data: {
           usedAt: new Date().toISOString(),

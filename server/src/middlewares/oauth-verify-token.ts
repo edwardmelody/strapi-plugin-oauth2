@@ -21,14 +21,14 @@ export default () => {
     }
 
     const introspect = await strapi
-      .service('plugin::oauth2.oauth-access-token')
+      .service('plugin::strapi-plugin-oauth2.oauth-access-token')
       .introspectByToken(token);
     if (!introspect || !introspect.active) {
       return ctx.throw(401, 'token_user_mismatch');
     }
 
     // rewrite authorization header for downstream usage
-    const oauthUser = await strapi.documents('plugin::oauth2.oauth-user').findFirst({
+    const oauthUser = await strapi.documents('plugin::strapi-plugin-oauth2.oauth-user').findFirst({
       filters: {
         clientId: introspect.clientId,
         userDocumentId: introspect.userId,
@@ -38,7 +38,7 @@ export default () => {
       return ctx.throw(401, 'token_user_mismatch');
     }
     // no longer need to use oauth token form global setting
-    // const globalSetting = await strapi.documents('plugin::oauth2.oauth-global-setting').findFirst();
+    // const globalSetting = await strapi.documents('plugin::strapi-plugin-oauth2.oauth-global-setting').findFirst();
     // ctx.request.headers['authorization'] = `Bearer ${globalSetting.systemAccessKey}`;
     ctx.request.headers['authorization'] = `Bearer ${oauthUser.apiTokenAccessKey}`;
 

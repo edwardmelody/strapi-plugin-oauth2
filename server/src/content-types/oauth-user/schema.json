@@ -36,7 +36,7 @@
     "client": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::oauth2.oauth-client"
+      "target": "plugin::strapi-plugin-oauth2.oauth-client"
     },
     "user": {
       "type": "relation",
