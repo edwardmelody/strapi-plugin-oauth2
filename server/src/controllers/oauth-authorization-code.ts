@@ -25,7 +25,7 @@ export default factories.createCoreController(
 
         // create Authorization Code
         const rawCode = await strapi
-          .plugin('oauth2')
+          .plugin('strapi-plugin-oauth2')
           .service('oauth-authorization-code')
           .createAuthorizationCode({
             clientId,

@@ -37,9 +37,6 @@ export default () => {
     if (!oauthUser) {
       return ctx.throw(401, 'token_user_mismatch');
     }
-    // no longer need to use oauth token form global setting
-    // const globalSetting = await strapi.documents('plugin::strapi-plugin-oauth2.oauth-global-setting').findFirst();
-    // ctx.request.headers['authorization'] = `Bearer ${globalSetting.systemAccessKey}`;
     ctx.request.headers['authorization'] = `Bearer ${oauthUser.apiTokenAccessKey}`;
 
     // attach info to ctx.state

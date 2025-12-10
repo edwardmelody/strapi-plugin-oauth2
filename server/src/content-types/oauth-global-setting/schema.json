@@ -11,12 +11,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "systemAccessKey": {
-      "type": "password",
-      "required": true,
-      "private": true,
-      "searchable": false
-    },
     "scopes": {
       "type": "json"
     }

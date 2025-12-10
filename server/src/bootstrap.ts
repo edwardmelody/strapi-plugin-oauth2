@@ -7,8 +7,6 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
     throw new Error('OAuth2 plugin: Unsupported JWT algorithm (OAUTH_JWT_ALG) configured');
   } else if (!config.audience) {
     throw new Error('OAuth2 plugin: JWT audience (OAUTH_AUD) is not configured');
-  } else if (!config.loginUrl) {
-    throw new Error('OAuth2 plugin: Login URL (OAUTH_LOGIN_URL) is not configured');
   } else if (config.jwtAlg === 'RS256' && !config.jwtPublicKey && !config.jwtPrivateKey) {
     throw new Error(
       'OAuth2 plugin: RSA public/private key pair is not configured for RS256 algorithm (OAUTH_JWT_PUBLIC_KEY and OAUTH_JWT_PRIVATE_KEY)'
@@ -114,16 +112,8 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
   if (!globalSettings) {
     await strapi.documents('plugin::strapi-plugin-oauth2.oauth-global-setting').create({
       data: {
-        systemAccessKey: accessKey,
         scopes: [],
       },
-    });
-  } else if (accessKey && !globalSettings.systemAccessKey) {
-    await strapi.documents('plugin::strapi-plugin-oauth2.oauth-global-setting').update({
-      documentId: globalSettings.documentId,
-      data: {
-        systemAccessKey: accessKey,
-      } as any,
     });
   }
 };

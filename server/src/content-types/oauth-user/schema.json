@@ -28,7 +28,7 @@
       "required": true
     },
     "apiTokenAccessKey": {
-      "type": "string",
+      "type": "text",
       "required": true,
       "private": true,
       "searchable": false

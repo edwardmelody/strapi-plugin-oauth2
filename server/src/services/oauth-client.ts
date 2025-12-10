@@ -8,6 +8,8 @@ import {
   getOAuthConfig,
   hashSecret,
   verifySecret,
+  maskSecret,
+  maskPrivateKey,
 } from '../utils/oauth-utils';
 const { ValidationError, NotFoundError } = utils.errors;
 
@@ -46,15 +48,24 @@ export default factories.createCoreService(
         userDocumentId = ctx.state.user.documentId;
       }
 
+      const { callbackUrl } = getOAuthConfig();
+
+      if (callbackUrl) {
+        data.redirectUris = data.redirectUris || [];
+        data.redirectUris.unshift(callbackUrl);
+      }
+
       const entity = await strapi.documents('plugin::strapi-plugin-oauth2.oauth-client').create({
         data: {
           ...data,
           clientId,
+          clientSecret: maskSecret(rawSecret),
           clientSecretHash: secretHash,
           user: userDocumentId,
           createdType,
           jwtAlg: 'RS256',
           publicKey,
+          privateKey: maskPrivateKey(privateKey),
         },
         populate: {
           user: true,
@@ -88,6 +99,7 @@ export default factories.createCoreService(
       await strapi.documents('plugin::strapi-plugin-oauth2.oauth-client').update({
         documentId: client.documentId,
         data: {
+          clientSecret: maskSecret(rawSecret),
           clientSecretHash: secretHash,
         } as any,
       });
@@ -178,6 +190,7 @@ export default factories.createCoreService(
         data: {
           jwtAlg: 'RS256',
           publicKey,
+          privateKey: maskPrivateKey(privateKey),
         } as any,
         populate: {
           user: true,

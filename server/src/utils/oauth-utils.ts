@@ -6,18 +6,19 @@ import path from 'path';
 import fs from 'fs';
 
 function getOAuthConfig() {
-  const jwtAlg = strapi.plugin("strapi-plugin-oauth2").config('jwtAlg') || 'HS256';
-  const jwtSignKey = strapi.plugin("strapi-plugin-oauth2").config('jwtSignKey');
-  const accessTokenTTL = strapi.plugin("strapi-plugin-oauth2").config('accessTokenTTL') || 3600;
-  const audience = strapi.plugin("strapi-plugin-oauth2").config('audience');
-  const authCodeTtlSeconds = strapi.plugin("strapi-plugin-oauth2").config('authCodeTtlSeconds') || 300;
-  const loginUrl = strapi.plugin("strapi-plugin-oauth2").config('loginUrl');
-  const maxAssertionTtl = strapi.plugin("strapi-plugin-oauth2").config('maxAssertionTtl') || 300;
+  const jwtAlg = strapi.plugin('strapi-plugin-oauth2').config('jwtAlg') || 'HS256';
+  const jwtSignKey = strapi.plugin('strapi-plugin-oauth2').config('jwtSignKey');
+  const accessTokenTTL = strapi.plugin('strapi-plugin-oauth2').config('accessTokenTTL') || 3600;
+  const audience = strapi.plugin('strapi-plugin-oauth2').config('audience');
+  const authCodeTtlSeconds =
+    strapi.plugin('strapi-plugin-oauth2').config('authCodeTtlSeconds') || 300;
+  const callbackUrl = strapi.plugin('strapi-plugin-oauth2').config('callbackUrl');
+  const maxAssertionTtl = strapi.plugin('strapi-plugin-oauth2').config('maxAssertionTtl') || 300;
   let jwtPublicKeyPath: string =
-    strapi.plugin("strapi-plugin-oauth2").config('jwtPublicKey') || './assets/oauth2/public.key';
+    strapi.plugin('strapi-plugin-oauth2').config('jwtPublicKey') || './assets/oauth2/public.key';
   let jwtPrivateKeyPath: string =
-    strapi.plugin("strapi-plugin-oauth2").config('jwtPrivateKey') || './assets/oauth2/private.key';
-  const jwtRS256Bits = strapi.plugin("strapi-plugin-oauth2").config('jwtRS256Bits') || 2048;
+    strapi.plugin('strapi-plugin-oauth2').config('jwtPrivateKey') || './assets/oauth2/private.key';
+  const jwtRS256Bits = strapi.plugin('strapi-plugin-oauth2').config('jwtRS256Bits') || 2048;
 
   jwtPublicKeyPath = path.join(process.cwd(), jwtPublicKeyPath);
   jwtPrivateKeyPath = path.join(process.cwd(), jwtPrivateKeyPath);
@@ -38,7 +39,7 @@ function getOAuthConfig() {
     jwtPrivateKey: jwtPrivateKey as jwt.Secret,
     audience: audience as string,
     authCodeTtlSeconds: authCodeTtlSeconds as number,
-    loginUrl: loginUrl as string,
+    callbackUrl: callbackUrl as string,
     maxAssertionTtl: maxAssertionTtl as number,
     jwtRS256Bits: jwtRS256Bits as number,
   };
@@ -148,6 +149,50 @@ function generateRSAKeyPair() {
   return { publicKey, privateKey };
 }
 
+/**
+ * Mask a secret string, showing only the last 5 characters
+ * Example: "abc123def456" -> "*****f456"
+ */
+function maskSecret(secret: string, visibleChars: number = 5): string {
+  if (!secret || secret.length <= visibleChars) {
+    return secret;
+  }
+  const maskedPart = '*'.repeat(Math.min(secret.length - visibleChars, 20));
+  const visiblePart = secret.slice(-visibleChars);
+  return maskedPart + visiblePart;
+}
+
+/**
+ * Mask a private key, showing only header, footer, and last 20 characters of content
+ * Example:
+ * -----BEGIN PRIVATE KEY-----
+ * MIIEvQIBA...last_20_chars
+ * -----END PRIVATE KEY-----
+ */
+function maskPrivateKey(privateKey: string, visibleChars: number = 20): string {
+  if (!privateKey) {
+    return privateKey;
+  }
+
+  const lines = privateKey.split('\n');
+  if (lines.length < 3) {
+    return privateKey;
+  }
+
+  const header = lines[0];
+  const footer = lines[lines.length - 1] || lines[lines.length - 2];
+  const content = lines.slice(1, -1).join('');
+
+  if (content.length <= visibleChars) {
+    return privateKey;
+  }
+
+  const visiblePart = content.replace('-----END PRIVATE KEY-----', '').slice(-visibleChars);
+  const maskedContent = '...' + visiblePart;
+
+  return `${header}\n${maskedContent}\n${footer}`;
+}
+
 export {
   getOAuthConfig,
   hashSecret,
@@ -161,4 +206,6 @@ export {
   hashValue,
   verifyPkce,
   generateRSAKeyPair,
+  maskSecret,
+  maskPrivateKey,
 };

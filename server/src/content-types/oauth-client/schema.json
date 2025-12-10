@@ -15,6 +15,12 @@
       "type": "string",
       "unique": true
     },
+    "clientSecret": {
+      "type": "string"
+    },
+    "clientSecretMasked": {
+      "type": "string"
+    },
     "clientSecretHash": {
       "type": "string",
       "private": true
@@ -25,7 +31,13 @@
       "enum": ["HS256", "RS256", "ES256"]
     },
     "publicKey": {
-      "type": "string"
+      "type": "text"
+    },
+    "privateKey": {
+      "type": "text"
+    },
+    "privateKeyMasked": {
+      "type": "text"
     },
     "name": {
       "type": "string",
