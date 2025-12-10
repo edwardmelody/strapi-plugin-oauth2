@@ -76,5 +76,13 @@
     "name": "Sorasak Siangsanan",
     "email": "siangsanan.sorasak@gmail.com",
     "url": "https://sorasak.com"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edwardmelody/strapi-plugin-oauth2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/edwardmelody/strapi-plugin-oauth2/issues"
+  },
+  "homepage": "https://github.com/edwardmelody/strapi-plugin-oauth2#readme"
 }
