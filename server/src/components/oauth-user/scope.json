@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_oauth_user_scopes",
+  "info": {
+    "displayName": "Scope"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "configurable": false
+    }
+  },
+  "config": {},
+  "__filename__": "scope.json",
+  "__schema__": {
+    "collectionName": "components_oauth_user_scopes",
+    "info": {
+      "displayName": "Scope"
+    },
+    "options": {},
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "configurable": false
+      }
+    },
+    "config": {},
+    "__filename__": "scope.json"
+  },
+  "uid": "oauth-user.scope",
+  "category": "oauth-user",
+  "modelType": "component",
+  "modelName": "scope",
+  "globalId": "ComponentOAuthUserScope"
+}

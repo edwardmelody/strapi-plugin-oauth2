@@ -14,39 +14,47 @@
     "accessToken": {
       "type": "text",
       "required": true,
+      "configurable": false,
       "private": true
     },
     "jti": {
       "type": "string",
       "required": true,
+      "configurable": false,
       "unique": true
     },
     "client": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::strapi-plugin-oauth2.oauth-client",
+      "configurable": false,
       "required": true
     },
     "expiresAt": {
       "type": "datetime",
+      "configurable": false,
       "required": true
     },
     "scope": {
-      "type": "string"
+      "type": "string",
+      "configurable": false
     },
     "revokedAt": {
-      "type": "datetime"
+      "type": "datetime",
+      "configurable": false
     },
     "grantType": {
       "type": "string",
       "required": true,
-      "enum": ["authorization_code", "client_credentials"]
+      "enum": ["authorization_code", "client_credentials"],
+      "configurable": false
     },
     "user": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "required": true
+      "required": true,
+      "configurable": false
     }
   }
 }

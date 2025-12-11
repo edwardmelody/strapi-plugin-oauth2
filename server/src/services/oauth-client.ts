@@ -52,7 +52,10 @@ export default factories.createCoreService(
 
       if (callbackUrl) {
         data.redirectUris = data.redirectUris || [];
-        data.redirectUris.unshift(callbackUrl);
+        data.redirectUris.unshift({
+          name: callbackUrl,
+          createdType: 'SYSTEM',
+        });
       }
 
       const entity = await strapi.documents('plugin::strapi-plugin-oauth2.oauth-client').create({

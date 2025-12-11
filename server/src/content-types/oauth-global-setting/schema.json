@@ -12,7 +12,10 @@
   "pluginOptions": {},
   "attributes": {
     "scopes": {
-      "type": "json"
+      "type": "component",
+      "component": "oauth-global-setting.scope",
+      "repeatable": true,
+      "configurable": false
     }
   }
 }

@@ -13,40 +13,52 @@
   "attributes": {
     "codeHash": {
       "type": "string",
-      "private": true
+      "private": true,
+      "configurable": false
     },
     "client": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::strapi-plugin-oauth2.oauth-client"
+      "target": "plugin::strapi-plugin-oauth2.oauth-client",
+      "configurable": false
     },
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user"
+      "target": "plugin::users-permissions.user",
+      "configurable": false
     },
     "scopes": {
-      "type": "json"
+      "type": "component",
+      "component": "oauth-authorization-code.scope",
+      "repeatable": true,
+      "configurable": false
     },
     "redirectUri": {
       "type": "string",
-      "required": true
+      "required": true,
+      "configurable": false
     },
     "codeChallenge": {
-      "type": "string"
+      "type": "string",
+      "configurable": false
     },
     "codeChallengeMethod": {
-      "type": "string"
+      "type": "string",
+      "configurable": false
     },
     "expiresAt": {
       "type": "datetime",
-      "required": true
+      "required": true,
+      "configurable": false
     },
     "usedAt": {
-      "type": "datetime"
+      "type": "datetime",
+      "configurable": false
     },
     "meta": {
-      "type": "json"
+      "type": "json",
+      "configurable": false
     }
   }
 }

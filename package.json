@@ -1,5 +1,7 @@
 {
-  "version": "1.0.2",
+  "name": "strapi-plugin-oauth2",
+  "description": "OAuth 2.0 plugin for Strapi",
+  "version": "1.0.3",
   "keywords": [],
   "type": "commonjs",
   "exports": {
@@ -69,8 +71,6 @@
     "displayName": "OAuth 2.0",
     "description": "OAuth 2.0 plugin for Strapi"
   },
-  "name": "strapi-plugin-oauth2",
-  "description": "OAuth 2.0 plugin for Strapi",
   "license": "MIT",
   "author": {
     "name": "Sorasak Siangsanan",

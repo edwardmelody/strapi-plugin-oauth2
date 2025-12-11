@@ -199,8 +199,12 @@ export default factories.createCoreController(
 
           const globalSettings = await strapi
             .documents('plugin::strapi-plugin-oauth2.oauth-global-setting')
-            .findFirst();
-          const availableScopes = globalSettings?.scopes || [];
+            .findFirst({
+              populate: ['scopes'],
+            });
+          const availableScopes = globalSettings?.scopes?.length
+            ? globalSettings.scopes.map((s) => s.name)
+            : [];
           if (!availableScopes.length) {
             throw new ValidationError('invalid_scope', {
               error: 'invalid_scope',

@@ -60,14 +60,19 @@ export default factories.createCoreController(
           .documents('plugin::strapi-plugin-oauth2.oauth-client')
           .findFirst({
             filters,
+            populate: ['scopes', 'redirectUris'],
           });
         if (!client) throw new NotFoundError('client_not_found');
-        let availableScopes = { ...client.scopes };
+        let availableScopes = client.scopes?.length ? client.scopes.map((s) => s.name) : [];
         if (client.createdType === 'USER') {
           const globalSettings = await strapi
             .documents('plugin::strapi-plugin-oauth2.oauth-global-setting')
-            .findFirst();
-          availableScopes = globalSettings?.scopes || {};
+            .findFirst({
+              populate: ['scopes'],
+            });
+          availableScopes = globalSettings?.scopes?.length
+            ? globalSettings.scopes.map((s) => s.name)
+            : [];
 
           if (!availableScopes?.length) {
             throw new ValidationError('no_available_scopes_defined');
@@ -81,6 +86,7 @@ export default factories.createCoreController(
               userDocumentId: ctx.state.user?.documentId,
               clientId: client.clientId,
             },
+            populate: ['scopes'],
           });
 
         // check requested scopes are subset of available scopes
@@ -97,8 +103,8 @@ export default factories.createCoreController(
           clientType: client.clientType,
           name: client.name,
           scopes: scopes,
-          grantedScopes: clientUser?.scopes || [],
-          redirectUris: client.redirectUris,
+          grantedScopes: clientUser?.scopes?.length ? clientUser.scopes.map((s) => s.name) : [],
+          redirectUris: client.redirectUris.map((uri) => uri.name),
           meta: client.meta,
         };
       } catch (err) {

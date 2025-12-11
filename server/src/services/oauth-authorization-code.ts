@@ -27,6 +27,8 @@ export default factories.createCoreService(
           },
           populate: {
             user: true,
+            scopes: true,
+            redirectUris: true,
           },
         });
       if (!oauthClient) throw new NotFoundError('invalid_client');
@@ -38,17 +40,22 @@ export default factories.createCoreService(
         }
       }
 
+      const redirectUris = oauthClient.redirectUris.map((uri) => uri.name);
       // validate redirectUri matches
-      if (!oauthClient.redirectUris.includes(redirectUri)) {
+      if (!redirectUris.includes(redirectUri)) {
         throw new ValidationError('redirect_uri_mismatch');
       }
 
-      let availableScopes = { ...oauthClient.scopes };
+      let availableScopes = oauthClient.scopes?.length ? oauthClient.scopes.map((s) => s.name) : [];
       if (oauthClient.createdType === 'USER') {
         const globalSettings = await strapi
           .documents('plugin::strapi-plugin-oauth2.oauth-global-setting')
-          .findFirst();
-        availableScopes = globalSettings?.scopes || {};
+          .findFirst({
+            populate: ['scopes'],
+          });
+        availableScopes = globalSettings?.scopes?.length
+          ? globalSettings.scopes.map((s) => s.name)
+          : [];
 
         if (!availableScopes?.length) {
           throw new ValidationError('no_available_scopes_defined');
@@ -73,7 +80,7 @@ export default factories.createCoreService(
             codeHash,
             client: oauthClient.documentId,
             user: userDocumentId,
-            scopes,
+            scopes: scopes.map((s) => ({ name: s })),
             redirectUri,
             codeChallenge,
             codeChallengeMethod,
@@ -116,7 +123,7 @@ export default factories.createCoreService(
               clientId: oauthClient.clientId,
               client: oauthClient.documentId,
               user: userDocumentId,
-              scopes,
+              scopes: scopes.map((s) => ({ name: s })),
               apiTokenId,
               apiTokenAccessKey,
             } as any,
@@ -124,7 +131,7 @@ export default factories.createCoreService(
         } else {
           // update user's granted scopes
           const newData = {
-            scopes,
+            scopes: scopes.map((s) => ({ name: s })),
           };
           if (apiTokenId && apiTokenAccessKey) {
             newData['apiTokenId'] = apiTokenId;
@@ -160,6 +167,7 @@ export default factories.createCoreService(
               },
             },
             user: true,
+            scopes: true,
           },
           sort: { createdAt: 'desc' },
         });
@@ -200,7 +208,7 @@ export default factories.createCoreService(
       return {
         client: rec.client,
         authorizationUser: rec.user,
-        scopes: rec.scopes,
+        scopes: rec.scopes.map((s) => s.name),
       };
     },
   })

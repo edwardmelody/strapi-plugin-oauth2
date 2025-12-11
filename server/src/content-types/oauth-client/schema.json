@@ -13,63 +13,83 @@
   "attributes": {
     "clientId": {
       "type": "string",
-      "unique": true
+      "unique": true,
+      "configurable": false
     },
     "clientSecret": {
-      "type": "string"
+      "type": "string",
+      "configurable": false
     },
     "clientSecretMasked": {
-      "type": "string"
+      "type": "string",
+      "configurable": false
     },
     "clientSecretHash": {
       "type": "string",
-      "private": true
+      "private": true,
+      "configurable": false
     },
     "jwtAlg": {
       "type": "enumeration",
       "required": true,
-      "enum": ["HS256", "RS256", "ES256"]
+      "enum": ["HS256", "RS256", "ES256"],
+      "configurable": false
     },
     "publicKey": {
-      "type": "text"
+      "type": "text",
+      "configurable": false
     },
     "privateKey": {
-      "type": "text"
+      "type": "text",
+      "configurable": false
     },
     "privateKeyMasked": {
-      "type": "text"
+      "type": "text",
+      "configurable": false
     },
     "name": {
       "type": "string",
-      "required": true
+      "required": true,
+      "configurable": false
     },
     "scopes": {
-      "type": "json"
+      "type": "component",
+      "component": "oauth-client.scope",
+      "repeatable": true,
+      "configurable": false
     },
     "redirectUris": {
-      "type": "json"
+      "type": "component",
+      "component": "oauth-client.redirect-uri",
+      "repeatable": true,
+      "configurable": false
     },
     "active": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "configurable": false
     },
     "meta": {
-      "type": "json"
+      "type": "json",
+      "configurable": false
     },
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user"
+      "target": "plugin::users-permissions.user",
+      "configurable": false
     },
     "clientType": {
       "type": "enumeration",
       "required": true,
-      "enum": ["CONFIDENTIAL", "PUBLIC"]
+      "enum": ["CONFIDENTIAL", "PUBLIC"],
+      "configurable": false
     },
     "createdType": {
       "type": "enumeration",
       "required": true,
-      "enum": ["USER", "BACK_OFFICE"]
+      "enum": ["USER", "BACK_OFFICE"],
+      "configurable": false
     }
   }
 }

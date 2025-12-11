@@ -48,9 +48,18 @@ import _ from 'lodash';
 
 import { getTranslation } from '../utils/getTranslation';
 
+interface OAuthScope {
+  name: string;
+}
+
+interface OAuthRedirectUri {
+  name: string;
+  createdType: 'USER' | 'SYSTEM';
+}
+
 interface OAuthGlobalSettings {
   documentId: string;
-  scopes: string[];
+  scopes: OAuthScope[];
 }
 
 interface OAuthClient {
@@ -60,8 +69,8 @@ interface OAuthClient {
   name: string;
   clientType: 'CONFIDENTIAL' | 'PUBLIC';
   createdType: 'BACK_OFFICE' | 'USER';
-  scopes: string[];
-  redirectUris?: string[];
+  scopes: OAuthScope[];
+  redirectUris?: OAuthRedirectUri[];
   meta?: any;
   active: boolean;
   createdAt: string;
@@ -78,7 +87,7 @@ interface CreateClientResponse {
   documentId: string;
   clientId: string;
   clientSecret: string;
-  scopes: string[];
+  scopes: OAuthScope[];
   redirectUris?: string[];
   meta?: any;
   user: any;
@@ -131,16 +140,16 @@ const HomePage = () => {
   const [editingClient, setEditingClient] = useState<OAuthClient | null>(null);
   const [newClient, setNewClient] = useState<{
     name: string;
-    scopes: string[];
+    scopes: OAuthScope[];
     clientType: 'CONFIDENTIAL' | 'PUBLIC';
-    redirectUris: string[];
+    redirectUris: OAuthRedirectUri[];
     meta: string;
     userDocumentId: string | null;
   }>({
     name: '',
     scopes: [],
     clientType: 'CONFIDENTIAL',
-    redirectUris: [''],
+    redirectUris: [{ name: '', createdType: 'USER' }],
     meta: '',
     userDocumentId: null,
   });
@@ -157,7 +166,13 @@ const HomePage = () => {
   const fetchGlobalSettings = async () => {
     try {
       setGlobalLoading(true);
-      const response = await get('/strapi-plugin-oauth2/global-settings');
+      const params = qs.stringify(
+        {
+          populate: ['scopes'],
+        },
+        { encodeValuesOnly: true }
+      );
+      const response = await get(`/strapi-plugin-oauth2/global-settings?${params}`);
       const { data } = response.data;
       setGlobalSettings(data);
     } catch (error) {
@@ -178,7 +193,7 @@ const HomePage = () => {
       setLoading(true);
       const params = qs.stringify(
         {
-          populate: ['user'],
+          populate: ['user', 'scopes', 'redirectUris'],
           sort: ['createdAt:desc'],
           pagination: {
             page,
@@ -268,7 +283,7 @@ const HomePage = () => {
         name: '',
         scopes: [],
         clientType: 'CONFIDENTIAL',
-        redirectUris: [''],
+        redirectUris: [{ name: '', createdType: 'USER' }],
         meta: '',
         userDocumentId: null,
       });
@@ -281,7 +296,7 @@ const HomePage = () => {
     try {
       await put(`/strapi-plugin-oauth2/global-settings/${editGlobalSettings.documentId}`, {
         data: {
-          scopes: editGlobalSettings.scopes,
+          scopes: editGlobalSettings.scopes.map((s) => ({ name: s.name })),
         },
       });
 
@@ -304,7 +319,7 @@ const HomePage = () => {
   const handleCreateClient = async () => {
     try {
       const meta = newClient.meta ? JSON.parse(newClient.meta) : {};
-      const redirectUris = newClient.redirectUris.filter((uri) => uri.trim() !== '');
+      const redirectUris = newClient.redirectUris.filter((uri) => uri.name.trim() !== '');
 
       const response = await post('/strapi-plugin-oauth2/clients', {
         data: {
@@ -325,7 +340,7 @@ const HomePage = () => {
         name: '',
         scopes: [],
         clientType: 'CONFIDENTIAL',
-        redirectUris: [''],
+        redirectUris: [{ name: '', createdType: 'USER' }],
         meta: '',
         userDocumentId: null,
       });
@@ -371,13 +386,18 @@ const HomePage = () => {
     if (!editingClient) return;
 
     try {
-      const redirectUris = (editingClient.redirectUris || []).filter((uri) => uri.trim() !== '');
+      const redirectUris = (editingClient.redirectUris || []).filter(
+        (uri) => uri.name.trim() !== ''
+      );
 
       await put(`/strapi-plugin-oauth2/clients/${editingClient.documentId}`, {
         data: {
           name: editingClient.name,
-          scopes: editingClient.scopes,
-          redirectUris,
+          scopes: editingClient.scopes.map((s) => ({ name: s.name })),
+          redirectUris: redirectUris.map((uri) => ({
+            name: uri.name,
+            createdType: uri.createdType,
+          })),
         },
       });
 
@@ -460,27 +480,28 @@ const HomePage = () => {
   const handleScopeToggle = (scopeName: string) => {
     setNewClient((prev) => ({
       ...prev,
-      scopes: prev.scopes.includes(scopeName)
-        ? prev.scopes.filter((s) => s !== scopeName)
-        : [...prev.scopes, scopeName],
+      scopes: prev.scopes.some((s) => s.name === scopeName)
+        ? prev.scopes.filter((s) => s.name !== scopeName)
+        : [...prev.scopes, { name: scopeName }],
     }));
   };
 
   const handleSectionToggle = (sectionScopes: Array<{ action: string; name: string }>) => {
     const scopeNames = sectionScopes.map((s) => s.name);
-    const allSelected = scopeNames.every((scopeName) => newClient.scopes.includes(scopeName));
+    const newScopeNames = newClient.scopes.map((s) => s.name);
+    const allSelected = scopeNames.every((scopeName) => newScopeNames.includes(scopeName));
     setNewClient((prev) => ({
       ...prev,
       scopes: allSelected
-        ? prev.scopes.filter((s) => !scopeNames.includes(s))
-        : [...new Set([...prev.scopes, ...scopeNames])],
+        ? prev.scopes.filter((s) => !scopeNames.includes(s.name))
+        : [...new Set([...prev.scopes, ...scopeNames.map((name) => ({ name }))])],
     }));
   };
 
   const handleAddRedirectUri = () => {
     setNewClient((prev) => ({
       ...prev,
-      redirectUris: [...prev.redirectUris, ''],
+      redirectUris: [...prev.redirectUris, { name: '', createdType: 'USER' }],
     }));
   };
 
@@ -494,7 +515,9 @@ const HomePage = () => {
   const handleRedirectUriChange = (index: number, value: string) => {
     setNewClient((prev) => ({
       ...prev,
-      redirectUris: prev.redirectUris.map((uri, i) => (i === index ? value : uri)),
+      redirectUris: prev.redirectUris.map((uri, i) =>
+        i === index ? { name: value, createdType: 'USER' } : uri
+      ),
     }));
   };
 
@@ -502,7 +525,7 @@ const HomePage = () => {
     if (!editingClient) return;
     setEditingClient({
       ...editingClient,
-      redirectUris: [...(editingClient.redirectUris || []), ''],
+      redirectUris: [...(editingClient.redirectUris || []), { name: '', createdType: 'USER' }],
     });
   };
 
@@ -518,7 +541,9 @@ const HomePage = () => {
     if (!editingClient) return;
     setEditingClient({
       ...editingClient,
-      redirectUris: (editingClient.redirectUris || []).map((uri, i) => (i === index ? value : uri)),
+      redirectUris: (editingClient.redirectUris || []).map((uri, i) =>
+        i === index ? { name: value, createdType: 'USER' } : uri
+      ),
     });
   };
 
@@ -526,21 +551,23 @@ const HomePage = () => {
     if (!editingClient) return;
     setEditingClient({
       ...editingClient,
-      scopes: editingClient.scopes.includes(scopeName)
-        ? editingClient.scopes.filter((s) => s !== scopeName)
-        : [...editingClient.scopes, scopeName],
+      scopes: editingClient.scopes.some((s) => s.name === scopeName)
+        ? editingClient.scopes.filter((s) => s.name !== scopeName)
+        : [...editingClient.scopes, { name: scopeName }],
     });
   };
 
   const handleEditSectionToggle = (sectionScopes: Array<{ action: string; name: string }>) => {
     if (!editingClient) return;
     const scopeNames = sectionScopes.map((s) => s.name);
-    const allSelected = scopeNames.every((scopeName) => editingClient.scopes.includes(scopeName));
+    const allSelected = scopeNames.every((scopeName) =>
+      _.find(editingClient.scopes, (s) => s.name === scopeName)
+    );
     setEditingClient({
       ...editingClient,
       scopes: allSelected
-        ? editingClient.scopes.filter((s) => !scopeNames.includes(s))
-        : [...new Set([...editingClient.scopes, ...scopeNames])],
+        ? editingClient.scopes.filter((s) => !scopeNames.includes(s.name))
+        : [...new Set([...editingClient.scopes, ...scopeNames.map((name) => ({ name }))])],
     });
   };
 
@@ -577,9 +604,9 @@ const HomePage = () => {
     if (!editGlobalSettings) return;
     setEditGlobalSettings({
       ...editGlobalSettings,
-      scopes: editGlobalSettings.scopes.includes(scopeName)
-        ? editGlobalSettings.scopes.filter((s) => s !== scopeName)
-        : [...editGlobalSettings.scopes, scopeName],
+      scopes: editGlobalSettings.scopes.some((s) => s.name === scopeName)
+        ? editGlobalSettings.scopes.filter((s) => s.name !== scopeName)
+        : [...editGlobalSettings.scopes, { name: scopeName }],
     });
   };
 
@@ -587,13 +614,13 @@ const HomePage = () => {
     if (!editGlobalSettings) return;
     const scopeNames = sectionScopes.map((s) => s.name);
     const allSelected = scopeNames.every((scopeName) =>
-      editGlobalSettings.scopes.includes(scopeName)
+      editGlobalSettings.scopes.some((s) => s.name === scopeName)
     );
     setEditGlobalSettings({
       ...editGlobalSettings,
       scopes: allSelected
-        ? editGlobalSettings.scopes.filter((s) => !scopeNames.includes(s))
-        : [...new Set([...editGlobalSettings.scopes, ...scopeNames])],
+        ? editGlobalSettings.scopes.filter((s) => !scopeNames.includes(s.name))
+        : [...new Set([...editGlobalSettings.scopes, ...scopeNames.map((name) => ({ name }))])],
     });
   };
 
@@ -650,7 +677,7 @@ const HomePage = () => {
               <Flex direction="row" gap={3} wrap="wrap" alignItems="flex-start">
                 {Object.entries(availableScopes).map(([section, scopes]) => {
                   const selectedScopesInSection = scopes.filter((scope) =>
-                    (globalSettings?.scopes || []).includes(scope.name)
+                    (globalSettings?.scopes || []).some((s) => s.name === scope.name)
                   );
 
                   if (selectedScopesInSection.length === 0) return null;
@@ -824,7 +851,7 @@ const HomePage = () => {
                       {client.createdType === 'BACK_OFFICE' ? (
                         (client.scopes || []).map((scope, index) => (
                           <Box key={index}>
-                            <Typography>{scope}</Typography>
+                            <Typography>{scope.name}</Typography>
                           </Box>
                         ))
                       ) : (
@@ -1020,7 +1047,7 @@ const HomePage = () => {
                                 .map((s) => s.name);
                               setEditGlobalSettings({
                                 ...editGlobalSettings,
-                                scopes: allScopeNames,
+                                scopes: allScopeNames.map((name) => ({ name })),
                               });
                             }}
                           >
@@ -1049,7 +1076,7 @@ const HomePage = () => {
                           {Object.entries(availableScopes).map(([section, scopes]) => {
                             const scopeNames = scopes.map((s) => s.name);
                             const allSelected = scopeNames.every((scopeName) =>
-                              editGlobalSettings.scopes.includes(scopeName)
+                              editGlobalSettings.scopes.some((s) => s.name === scopeName)
                             );
 
                             const isExpanded = globalExpandedSections[section];
@@ -1081,7 +1108,9 @@ const HomePage = () => {
                                         {scopes.map((scope) => (
                                           <Checkbox
                                             key={scope.name}
-                                            checked={editGlobalSettings.scopes.includes(scope.name)}
+                                            checked={editGlobalSettings.scopes.some(
+                                              (s) => s.name === scope.name
+                                            )}
                                             onCheckedChange={() =>
                                               handleGlobalScopeToggle(scope.name)
                                             }
@@ -1215,7 +1244,7 @@ const HomePage = () => {
                         <Flex key={index} gap={2} alignItems="flex-end" width="50%">
                           <Box flex="1">
                             <Field.Input
-                              value={uri}
+                              value={uri.name}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                 handleRedirectUriChange(index, e.target.value)
                               }
@@ -1257,7 +1286,10 @@ const HomePage = () => {
                             const allScopeNames = Object.values(availableScopes)
                               .flat()
                               .map((s) => s.name);
-                            setNewClient({ ...newClient, scopes: allScopeNames });
+                            setNewClient({
+                              ...newClient,
+                              scopes: allScopeNames.map((name) => ({ name })),
+                            });
                           }}
                         >
                           Select All
@@ -1282,8 +1314,9 @@ const HomePage = () => {
                       <Flex direction="row" gap={3} wrap="wrap" alignItems="flex-start">
                         {Object.entries(availableScopes).map(([section, scopes]) => {
                           const scopeNames = scopes.map((s) => s.name);
+                          const newScopeNames = newClient.scopes.map((s) => s.name);
                           const allSelected = scopeNames.every((scopeName) =>
-                            newClient.scopes.includes(scopeName)
+                            newScopeNames.includes(scopeName)
                           );
 
                           const isExpanded = expandedSections[section];
@@ -1315,7 +1348,7 @@ const HomePage = () => {
                                       {scopes.map((scope) => (
                                         <Checkbox
                                           key={scope.name}
-                                          checked={newClient.scopes.includes(scope.name)}
+                                          checked={newScopeNames.includes(scope.name)}
                                           onCheckedChange={() => handleScopeToggle(scope.name)}
                                         >
                                           <Flex gap={2} alignItems="center">
@@ -1579,14 +1612,14 @@ const HomePage = () => {
                           <Flex key={index} gap={2} alignItems="center" width="50%">
                             <Box flex="1">
                               <Field.Input
-                                value={uri}
+                                value={uri.name}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                   handleEditRedirectUriChange(index, e.target.value)
                                 }
                                 placeholder="https://example.com/callback"
                               />
                             </Box>
-                            {(editingClient.redirectUris || []).length > 0 && (
+                            {uri.createdType === 'USER' && (
                               <IconButton
                                 label="Remove"
                                 onClick={() => handleEditRemoveRedirectUri(index)}
@@ -1621,7 +1654,10 @@ const HomePage = () => {
                               const allScopeNames = Object.values(availableScopes)
                                 .flat()
                                 .map((s) => s.name);
-                              setEditingClient({ ...editingClient!, scopes: allScopeNames });
+                              setEditingClient({
+                                ...editingClient!,
+                                scopes: allScopeNames.map((name) => ({ name })),
+                              });
                             }}
                           >
                             Select All
@@ -1647,7 +1683,7 @@ const HomePage = () => {
                           {Object.entries(availableScopes).map(([section, scopes]) => {
                             const scopeNames = scopes.map((s) => s.name);
                             const allSelected = scopeNames.every((scopeName) =>
-                              editingClient.scopes.includes(scopeName)
+                              editingClient.scopes.some((s) => s.name === scopeName)
                             );
 
                             const isExpanded = editExpandedSections[section];
@@ -1679,7 +1715,9 @@ const HomePage = () => {
                                         {scopes.map((scope) => (
                                           <Checkbox
                                             key={scope.name}
-                                            checked={editingClient.scopes.includes(scope.name)}
+                                            checked={editingClient.scopes.some(
+                                              (s) => s.name === scope.name
+                                            )}
                                             onCheckedChange={() =>
                                               handleEditScopeToggle(scope.name)
                                             }

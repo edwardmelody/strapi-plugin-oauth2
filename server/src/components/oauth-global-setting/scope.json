@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_oauth_global_setting_scopes",
+  "info": {
+    "displayName": "Scope"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "configurable": false
+    }
+  },
+  "config": {},
+  "__filename__": "scope.json",
+  "__schema__": {
+    "collectionName": "components_oauth_global_setting_scopes",
+    "info": {
+      "displayName": "Scope"
+    },
+    "options": {},
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "configurable": false
+      }
+    },
+    "config": {},
+    "__filename__": "scope.json"
+  },
+  "uid": "oauth-global-setting.scope",
+  "category": "oauth-global-setting",
+  "modelType": "component",
+  "modelName": "scope",
+  "globalId": "ComponentOAuthGlobalSettingScope"
+}

@@ -1,0 +1,49 @@
+{
+  "collectionName": "components_oauth_client_redirect_uris",
+  "info": {
+    "displayName": "Redirect URI"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "configurable": false
+    },
+    "createdType": {
+      "type": "enumeration",
+      "enum": ["USER", "SYSTEM"],
+      "required": true,
+      "configurable": false
+    }
+  },
+  "config": {},
+  "__filename__": "redirect-uri.json",
+  "__schema__": {
+    "collectionName": "components_oauth_client_redirect_uris",
+    "info": {
+      "displayName": "redirect-uri"
+    },
+    "options": {},
+    "attributes": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "configurable": false
+      },
+      "createdBy": {
+        "type": "enumeration",
+        "enum": ["USER", "SYSTEM"],
+        "required": true,
+        "configurable": false
+      }
+    },
+    "config": {},
+    "__filename__": "redirect-uri.json"
+  },
+  "uid": "oauth-client.redirect-uri",
+  "category": "oauth-client",
+  "modelType": "component",
+  "modelName": "redirect-uri",
+  "globalId": "ComponentOAuthClientRedirectUri"
+}

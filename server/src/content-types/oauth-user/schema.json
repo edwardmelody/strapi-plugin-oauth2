@@ -13,35 +13,44 @@
   "attributes": {
     "userDocumentId": {
       "type": "string",
-      "required": true
+      "required": true,
+      "configurable": false
     },
     "clientId": {
       "type": "string",
-      "required": true
+      "required": true,
+      "configurable": false
     },
     "scopes": {
-      "type": "json"
+      "type": "component",
+      "component": "oauth-user.scope",
+      "repeatable": true,
+      "configurable": false
     },
     "apiTokenId": {
       "type": "integer",
       "min": 1,
-      "required": true
+      "required": true,
+      "configurable": false
     },
     "apiTokenAccessKey": {
       "type": "text",
       "required": true,
       "private": true,
-      "searchable": false
+      "searchable": false,
+      "configurable": false
     },
     "client": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::strapi-plugin-oauth2.oauth-client"
+      "target": "plugin::strapi-plugin-oauth2.oauth-client",
+      "configurable": false
     },
     "user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "plugin::users-permissions.user"
+      "target": "plugin::users-permissions.user",
+      "configurable": false
     }
   }
 }
